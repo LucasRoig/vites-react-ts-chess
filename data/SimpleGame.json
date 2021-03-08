@@ -1,0 +1,132 @@
+{
+  "game": {
+    "id": -1,
+    "headers": {
+      "Event": "?",
+      "Site": "?",
+      "Date": "????.??.??",
+      "Round": "?",
+      "White": "?",
+      "Black": "?",
+      "Result": "*",
+      "PlyCount": "6"
+    },
+    "comment": "",
+    "positions": [
+      {
+        "index": 0,
+        "nextPositionIndex": 1,
+        "variationsIndexes": [
+          6
+        ],
+        "nags": [],
+        "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "comment": "Apres premier coup\nAvant second coup",
+        "commentBefore": "",
+        "move": {
+          "from": "e2",
+          "to": "e4",
+          "promotion": null
+        },
+        "san": "e4",
+        "isMainline": true
+      },
+      {
+        "index": 6,
+        "nextPositionIndex": null,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "comment": "",
+        "commentBefore": "Avant varition",
+        "move": {
+          "from": "c7",
+          "to": "c5",
+          "promotion": null
+        },
+        "san": "c5",
+        "isMainline": false
+      },
+      {
+        "index": 1,
+        "nextPositionIndex": 2,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "comment": "Dans ligne pricipale, avant variation",
+        "commentBefore": "",
+        "move": {
+          "from": "e7",
+          "to": "e5",
+          "promotion": null
+        },
+        "san": "e5",
+        "isMainline": true
+      },
+      {
+        "index": 2,
+        "nextPositionIndex": 3,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+        "comment": "",
+        "commentBefore": "",
+        "move": {
+          "from": "g1",
+          "to": "f3",
+          "promotion": null
+        },
+        "san": "Nf3",
+        "isMainline": true
+      },
+      {
+        "index": 3,
+        "nextPositionIndex": 4,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+        "comment": "",
+        "commentBefore": "",
+        "move": {
+          "from": "b8",
+          "to": "c6",
+          "promotion": null
+        },
+        "san": "Nc6",
+        "isMainline": true
+      },
+      {
+        "index": 4,
+        "nextPositionIndex": 5,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+        "comment": "",
+        "commentBefore": "",
+        "move": {
+          "from": "f1",
+          "to": "c4",
+          "promotion": null
+        },
+        "san": "Bc4",
+        "isMainline": true
+      },
+      {
+        "index": 5,
+        "nextPositionIndex": null,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+        "comment": "",
+        "commentBefore": "",
+        "move": {
+          "from": "g8",
+          "to": "f6",
+          "promotion": null
+        },
+        "san": "Nf6",
+        "isMainline": true
+      }
+    ]
+  }
+}

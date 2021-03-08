@@ -1,6 +1,8 @@
 import {Move} from "./index";
 
-export type Headers = Map<string, string>
+export type Headers = {
+  [key: string]: string
+}
 
 export interface FirstPosition {
   nags: number[]
