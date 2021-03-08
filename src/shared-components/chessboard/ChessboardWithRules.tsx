@@ -1,6 +1,6 @@
 import React from "react";
 import {ChessBoard} from "./Chessboard";
-import {Color, Move, Square} from "../../libraries/chess";
+import {Move, Square} from "../../libraries/chess";
 import * as ChessJS from "chess.js"
 
 export interface  ChessBoardWithRulesProps {

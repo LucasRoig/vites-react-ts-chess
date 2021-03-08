@@ -11,13 +11,43 @@
       "Result": "*",
       "PlyCount": "6"
     },
-    "comment": "",
+    "comment": "Avant ligne principale",
     "positions": [
       {
         "index": 0,
         "nextPositionIndex": 1,
         "variationsIndexes": [
-          6
+          8
+        ],
+        "nags": [],
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "comment": null,
+        "commentBefore": "",
+        "move": null,
+        "san": null,
+        "isMainline": true
+      },
+      {
+        "index": 8,
+        "nextPositionIndex": null,
+        "variationsIndexes": [],
+        "nags": [],
+        "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+        "comment": "",
+        "commentBefore": "",
+        "move": {
+          "from": "d2",
+          "to": "d4",
+          "promotion": null
+        },
+        "san": "d4",
+        "isMainline": false
+      },
+      {
+        "index": 1,
+        "nextPositionIndex": 2,
+        "variationsIndexes": [
+          7
         ],
         "nags": [],
         "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
@@ -32,7 +62,7 @@
         "isMainline": true
       },
       {
-        "index": 6,
+        "index": 7,
         "nextPositionIndex": null,
         "variationsIndexes": [],
         "nags": [],
@@ -48,8 +78,8 @@
         "isMainline": false
       },
       {
-        "index": 1,
-        "nextPositionIndex": 2,
+        "index": 2,
+        "nextPositionIndex": 3,
         "variationsIndexes": [],
         "nags": [],
         "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
@@ -64,8 +94,8 @@
         "isMainline": true
       },
       {
-        "index": 2,
-        "nextPositionIndex": 3,
+        "index": 3,
+        "nextPositionIndex": 4,
         "variationsIndexes": [],
         "nags": [],
         "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
@@ -80,8 +110,8 @@
         "isMainline": true
       },
       {
-        "index": 3,
-        "nextPositionIndex": 4,
+        "index": 4,
+        "nextPositionIndex": 5,
         "variationsIndexes": [],
         "nags": [],
         "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
@@ -96,8 +126,8 @@
         "isMainline": true
       },
       {
-        "index": 4,
-        "nextPositionIndex": 5,
+        "index": 5,
+        "nextPositionIndex": 6,
         "variationsIndexes": [],
         "nags": [],
         "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
@@ -112,7 +142,7 @@
         "isMainline": true
       },
       {
-        "index": 5,
+        "index": 6,
         "nextPositionIndex": null,
         "variationsIndexes": [],
         "nags": [],
