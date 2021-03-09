@@ -18,14 +18,20 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game}) => {
   }
   return (
     <div>
-      {line.map(p => <>
-          {processCommentBefore(p)}
-          <span className="mainline-move">{positionToUci(p)}</span>
-          {processCommentAfter(p)}
-          {processVariations(p)}
-        </>
-      )}
+      {game.comment && <div className="comment">{game.comment}</div>}
+      {line.map(p => <MainLineMove key={p.index} position={p}/>)}
     </div>
+  )
+}
+
+const MainLineMove: React.FC<{position: Position}> = ({position}) => {
+  return (
+    <>
+      {processCommentBefore(position)}
+      <span className="mainline-move">{positionToUci(position)}</span>
+      {processCommentAfter(position)}
+      {processVariations(position)}
+    </>
   )
 }
 
@@ -34,19 +40,33 @@ interface VariationProps {
   depth: number
 }
 
-const Variation: React.FC<VariationProps> = ({position}) => {
+const Variation: React.FC<VariationProps> = ({position, depth}) => {
   const positions = flattenMoves(position)
   return (
     <>
-      {positions.map(p =><span>{positionToUci(p)}</span> )}
+      {depth === 1 && <div className="variation-d-1">
+        <span>[ </span>
+        {positions.map(p =><VariationMove position={p} depth={depth}/>)}
+        <span> ]</span>
+      </div>}
     </>
   )
 };
 
+const VariationMove: React.FC<{position: Position, depth: number}> = ({position, depth}) => {
+  return (
+    <>
+      {processCommentBefore(position)}
+      <span>{positionToUci(position)}</span>
+      {processCommentAfter(position)}
+    </>
+  )
+}
+
 function processVariations(position: Position): ReactElement<any, any> | null {
-  if (position.variations?.length > 1) {
+  if (position.parent?.variations?.length > 1) {
     return (<>
-        {position.variations.slice(1).map(p => <><br/><Variation position={p} depth={1} /><br/></>)}
+        {position.parent.variations.slice(1).map(p => <Variation position={p} depth={1} />)}
     </>
     )
   }
@@ -70,8 +90,17 @@ function processCommentAfter(position: Position): ReactElement<any, any> | null 
 function positionToUci(position: Position): string {
   let uci = position.san
   let forceMoveNumber = false;
+  //force if first move of variation
   if (position.parent?.variations[0] !== position) {
     forceMoveNumber = true
+  }
+  //force if first move after variation
+  if (position.parent?.variations?.length > 1) {
+    forceMoveNumber = true;
+  }
+  //force if first move after comment
+  if ((position.parent?.comment && position.parent?.comment.length > 0) || (position.commentBefore && position.commentBefore.length > 0)) {
+    forceMoveNumber = true;
   }
   let lastMoveColor = fenToLastMoveColor(position.fen);
   if (lastMoveColor === "white" || forceMoveNumber) {
