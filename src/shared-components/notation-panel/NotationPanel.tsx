@@ -63,10 +63,10 @@ const VariationMove: React.FC<{position: Position, depth: number}> = ({position,
   )
 }
 
-function processVariations(position: Position): ReactElement<any, any> | null {
+function processVariations(position: Position, currentDepth = 0): ReactElement<any, any> | null {
   if (position.parent?.variations?.length > 1) {
     return (<>
-        {position.parent.variations.slice(1).map(p => <Variation position={p} depth={1} />)}
+        {position.parent.variations.slice(1).map(p => <Variation position={p} depth={currentDepth + 1} />)}
     </>
     )
   }
