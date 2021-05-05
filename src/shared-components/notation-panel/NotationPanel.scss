@@ -12,3 +12,21 @@
 .variation-d-1 {
   margin-left: 0.7em;
 }
+
+.variation-d-1 .variation-move {
+  margin-right: 0.5em;
+  font-family: 'Chess', 'Noto Sans', sans-serif;
+}
+.variation-d-1 .variation-move:nth-last-child(1) {
+  margin-right: 0;
+}
+
+.variation-d-2 .variation-move {
+  margin-right: 0.5em;
+  font-family: 'Chess', 'Noto Sans', sans-serif;
+  font-style: italic;
+}
+
+.variation-d-2 .variation-move:nth-last-child(1) {
+  margin-right: 0.2em;
+}

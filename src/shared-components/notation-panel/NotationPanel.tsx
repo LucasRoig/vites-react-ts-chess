@@ -24,7 +24,7 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game}) => {
   )
 }
 
-const MainLineMove: React.FC<{position: Position}> = ({position}) => {
+const MainLineMove: React.FC<{ position: Position }> = ({position}) => {
   return (
     <>
       {processCommentBefore(position)}
@@ -38,27 +38,52 @@ const MainLineMove: React.FC<{position: Position}> = ({position}) => {
 interface VariationProps {
   position: Position
   depth: number
+  open: boolean
+  close: boolean
 }
 
-const Variation: React.FC<VariationProps> = ({position, depth}) => {
+const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => {
   const positions = flattenMoves(position)
+  const hasSubvariations = positions.some(p => p.variations.length > 1)
+  let block;
+  if (depth === 1) {
+    block = <div className="variation-d-1">
+      {open && <span>[ </span>}
+      <span>
+            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+          </span>
+      {close ? <span> ]</span> : <span>; </span>}
+    </div>
+  } else if (hasSubvariations) {
+    block = <div className="variation-d-1">
+      {open && <span>( </span>}
+      <span>
+            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+          </span>
+      {close ? <span> )</span> : <span>; </span>}
+    </div>
+  } else {
+    block = <span className="variation-d-2">
+        {open && <span>(</span>}
+      <span>
+            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+          </span>
+          <span>{close ? ') ' : '; '}</span>
+      </span>
+  }
   return (
-    <>
-      {depth === 1 && <div className="variation-d-1">
-        <span>[ </span>
-        {positions.map(p =><VariationMove position={p} depth={depth}/>)}
-        <span> ]</span>
-      </div>}
-    </>
+    <>{block}</>
   )
-};
+}
 
-const VariationMove: React.FC<{position: Position, depth: number}> = ({position, depth}) => {
+const VariationMove: React.FC<{ position: Position, depth: number }> = ({position, depth}) => {
   return (
     <>
       {processCommentBefore(position)}
-      <span>{positionToUci(position)}</span>
+      <span className="variation-move">{positionToUci(position)}</span>
       {processCommentAfter(position)}
+      {/*Only process a variation if position is the main move of the parent*/}
+      {position.parent.variations[0] === position && processVariations(position, depth)}
     </>
   )
 }
@@ -66,8 +91,9 @@ const VariationMove: React.FC<{position: Position, depth: number}> = ({position,
 function processVariations(position: Position, currentDepth = 0): ReactElement<any, any> | null {
   if (position.parent?.variations?.length > 1) {
     return (<>
-        {position.parent.variations.slice(1).map(p => <Variation position={p} depth={currentDepth + 1} />)}
-    </>
+        {position.parent.variations.slice(1).map((p,i, tab) =>
+          <Variation position={p} depth={currentDepth + 1} open={i === 0} close={i === tab.length - 1}/>)}
+      </>
     )
   }
   return null
@@ -95,8 +121,12 @@ function positionToUci(position: Position): string {
     forceMoveNumber = true
   }
   //force if first move after variation
-  if (position.parent?.variations?.length > 1) {
-    forceMoveNumber = true;
+  if (position.parent && position.parent.hasOwnProperty("parent")) {
+    //Check that grandparent has variations and that position is in the mainline from grandparent
+    const grandparent = (position.parent as Position).parent
+    if (grandparent.variations.length > 1 && position.parent === grandparent.variations[0] && position.parent.variations[0] === position) {
+      forceMoveNumber = true
+    }
   }
   //force if first move after comment
   if ((position.parent?.comment && position.parent?.comment.length > 0) || (position.commentBefore && position.commentBefore.length > 0)) {
@@ -105,7 +135,11 @@ function positionToUci(position: Position): string {
   let lastMoveColor = fenToLastMoveColor(position.fen);
   if (lastMoveColor === "white" || forceMoveNumber) {
     let separator = lastMoveColor === "white" ? "." : "..."
-    uci = fenToFullMoves(position.fen) + separator + uci
+    let fullMoves = fenToFullMoves(position.fen)
+    if (lastMoveColor === "black") {
+      fullMoves--
+    }
+    uci = fullMoves + separator + uci
   }
   return uci
 }
