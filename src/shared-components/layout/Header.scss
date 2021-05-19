@@ -3,3 +3,20 @@
   z-index: 1;
   box-shadow: 0 0.5rem 1rem 0 rgb(44 51 73 / 10%);
 }
+
+.user-icon {
+  margin-right: 2.5em;
+}
+
+.user-icon > img {
+  border-radius: 50%;
+  max-height: 2em;
+  position: absolute;
+  top: 50%;
+
+  -webkit-transform:translate(0%, -50%);
+  -moz-transform:translate(0%, -50%);
+  -ms-transform:translate(0%, -50%);
+  -o-transform:translate(0%, -50%);
+  transform:translate(0%, -50%);
+}

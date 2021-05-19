@@ -1,5 +1,7 @@
 import React from "react";
 import "./Sidebar.scss"
+import {Link} from "react-router-dom";
+
 interface SidebarProps {
 
 }
@@ -11,8 +13,8 @@ const Sidebar: React.FunctionComponent<SidebarProps> = () => {
                     General
                 </p>
                 <ul className="menu-list">
-                    <li><a>Databases</a></li>
-                    <li><a>Notebooks</a></li>
+                    <li><Link to="/databases">Databases</Link></li>
+                    <li><Link to="/notebooks">Notebooks</Link></li>
                 </ul>
             </nav>
         </aside>

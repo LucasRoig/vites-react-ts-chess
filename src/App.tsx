@@ -1,18 +1,31 @@
 import React, {useState} from 'react'
 import logo from './logo.svg'
-import './App.css'
+import './App.scss'
 import Button from "@storybook/react/dist/demo/Button";
 import {Header} from "./shared-components/layout/Header";
 import {Sidebar} from "./shared-components/layout/Sidebar";
+import {Switch, Route} from "react-router-dom";
+import {ProtectedRoute} from "./shared-components/ProtectedRoute";
+import {Databases} from "./databases/Databases";
 
 function App() {
-    const [count, setCount] = useState(0)
 
     return (
         <>
             <Header/>
-            <div>
+            <div className="is-flex">
                 <Sidebar/>
+                <div>
+                    <Switch>
+                        <Route path="/" exact>
+                            <div>Home</div>
+                        </Route>
+                        <ProtectedRoute path="/databases" exact component={Databases}>
+                        </ProtectedRoute>
+                        <ProtectedRoute path="/notebooks" exact component={Databases}>
+                        </ProtectedRoute>
+                    </Switch>
+                </div>
             </div>
         </>
     )
