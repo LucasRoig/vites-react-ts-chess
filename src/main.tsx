@@ -7,7 +7,7 @@ import {HashRouter} from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-      <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk" redirectUri={window.location.origin}>
+      <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk" redirectUri={window.location.origin} audience="chess-faste">
           <HashRouter>
             <App />
           </HashRouter>

@@ -20,7 +20,8 @@ const Header: React.FunctionComponent<HeaderProps> = () => {
 }
 
 const RightSideAuthenticated: React.FunctionComponent = () => {
-    const {logout, user} = useAuth0()
+    const {logout, user, getAccessTokenSilently,getAccessTokenWithPopup} = useAuth0()
+    getAccessTokenSilently().then(t => console.log("token", t))
     console.log(user)
     return (
         <div className="navbar-end">
