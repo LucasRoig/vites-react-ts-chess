@@ -1,8 +1,6 @@
 import React from "react";
 import "./Sidebar.scss"
-import {Link} from "react-router-dom";
 import {useAppDispatch} from "../../store";
-import {Tab} from "../../store/tabs/TabsReducer";
 import {OpenTabAction} from "../../store/tabs/actions";
 
 interface SidebarProps {
@@ -10,8 +8,8 @@ interface SidebarProps {
 }
 const Sidebar: React.FunctionComponent<SidebarProps> = () => {
     const dispatch = useAppDispatch();
-    const openTab = (tab: Tab) => () => {
-        dispatch(OpenTabAction(tab))
+    const openTab = ({name, path}: {name: string, path: string}) => () => {
+        dispatch(OpenTabAction({name, path}))
     }
     return (
         <aside className="sidebar">

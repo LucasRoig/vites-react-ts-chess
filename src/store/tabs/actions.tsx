@@ -1,8 +1,11 @@
 import {Tab} from "./TabsReducer";
+import TabsService from "../../@core/TabsService";
+import {ThunkAction} from "redux-thunk";
 
-export const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
-export const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
+const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
+const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
 const CLOSE_TAB_ACTION = "CLOSE_TAB_ACTION"
+const LOAD_TABS_ACTION = "LOAD_TABS_ACTION"
 
 interface ClickTabActionType {
   type: typeof CLICK_TAB_ACTION
@@ -21,7 +24,8 @@ interface OpenTabActionType {
   payload: Tab
 }
 
-export function OpenTabAction(tab: Tab): OpenTabActionType {
+export function OpenTabAction({name, path}: {name: string, path: string}): OpenTabActionType {
+  const tab = TabsService.openTab({name, path})
   return {
     type: OPEN_TAB_ACTION,
     payload: tab
@@ -34,10 +38,31 @@ interface CloseTabActionType {
 }
 
 export function CloseTabAction(tab: Tab): CloseTabActionType {
+  TabsService.closeTab(tab)
   return {
     type: CLOSE_TAB_ACTION,
     payload: tab
   }
 }
 
-export type TabActionType = ClickTabActionType | OpenTabActionType | CloseTabActionType
+interface LoadTabsActionType {
+  type: typeof LOAD_TABS_ACTION
+  payload: Tab[]
+}
+
+// Exemple of async action
+// export const LoadTabsAction =  (): ThunkAction<void, {}, unknown, TabActionType> => async (dispatch) => {
+//   const response = await TabsService.fetchTabs()
+//   dispatch({
+//     type: LOAD_TABS_ACTION,
+//     payload: response
+//   })
+export const LoadTabsAction =  (): LoadTabsActionType => {
+  const response = TabsService.fetchTabs()
+  return {
+    type: LOAD_TABS_ACTION,
+    payload: response
+  }
+}
+
+export type TabActionType = ClickTabActionType | OpenTabActionType | CloseTabActionType | LoadTabsActionType

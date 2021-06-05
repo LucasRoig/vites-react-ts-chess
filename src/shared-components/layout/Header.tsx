@@ -7,11 +7,16 @@ interface HeaderProps {
 }
 
 const Header: React.FunctionComponent<HeaderProps> = () => {
-    const {loginWithRedirect, user, isAuthenticated, getAccessTokenSilently} = useAuth0()
+    const {isAuthenticated} = useAuth0()
     return (
         <header className="header">
             <nav className="navbar">
                 <div className="navbar-menu">
+                    <div className="navbar-start">
+                        <div className="navbar-item">
+                            <button className="button is-light">New Game</button>
+                        </div>
+                    </div>
                     {isAuthenticated ? <RightSideAuthenticated/> : <RightSideNotAuthenticated/>}
                 </div>
             </nav>
@@ -20,9 +25,7 @@ const Header: React.FunctionComponent<HeaderProps> = () => {
 }
 
 const RightSideAuthenticated: React.FunctionComponent = () => {
-    const {logout, user, getAccessTokenSilently,getAccessTokenWithPopup} = useAuth0()
-    getAccessTokenSilently().then(t => console.log("token", t))
-    console.log(user)
+    const {logout, user} = useAuth0()
     return (
         <div className="navbar-end">
             <div className="navbar-item has-dropdown is-hoverable">

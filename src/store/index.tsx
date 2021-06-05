@@ -1,13 +1,14 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
 import {composeWithDevTools} from "redux-devtools-extension";
 import {tabReducer} from "./tabs/TabsReducer";
-import {DefaultRootState, TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
+import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
+import thunk from "redux-thunk";
 const rootReducer = combineReducers({
   tabs: tabReducer
 })
 
 const getMiddleware = () => {
-  return applyMiddleware()
+  return applyMiddleware(thunk)
 }
 
 export const store = createStore(rootReducer, composeWithDevTools(getMiddleware()))

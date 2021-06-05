@@ -3,6 +3,7 @@ import {TabActionType} from "./actions";
 export interface Tab {
   name: string
   path: string
+  id: number
 }
 
 interface TabsState {
@@ -35,6 +36,12 @@ const tabReducer = (state = defaultState, action: TabActionType): TabsState => {
           ...state,
           selectedTab: tab
         }
+      }
+    case "LOAD_TABS_ACTION":
+      return {
+        ...state,
+        openedTabs: action.payload,
+        selectedTab: action.payload[0]
       }
     case "CLOSE_TAB_ACTION":
       const index = state.openedTabs.findIndex(t => t === action.payload)
