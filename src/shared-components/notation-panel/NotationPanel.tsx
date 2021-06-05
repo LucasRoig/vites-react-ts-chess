@@ -5,10 +5,11 @@ import {fenToFullMoves, fenToLastMoveColor} from "../../libraries/chess/FenUtils
 import {NonCircularGame, nonCircularGameToGame} from "../../libraries/chess/Game";
 
 export interface NotationPanelProps {
-  game: Game | NonCircularGame
+  game: Game | NonCircularGame,
+  currentPositionIndex: number
 }
 
-const NotationPanel: React.FC<NotationPanelProps> = ({game}) => {
+const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex}) => {
   let line: Position[] = []
   if (!(game as Game).firstPosition?.variations?.[0]?.parent) {
     game = nonCircularGameToGame(game)
@@ -19,18 +20,18 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game}) => {
   return (
     <div style={{width: "100%", height: "100%", display: "flex", flexWrap: "wrap", alignContent: "flex-start"}}>
       {game.comment && <div className="comment">{game.comment}</div>}
-      {line.map(p => <MainLineMove key={p.index} position={p}/>)}
+      {line.map(p => <MainLineMove key={p.index} position={p} currentPositionIndex={currentPositionIndex}/>)}
     </div>
   )
 }
 
-const MainLineMove: React.FC<{ position: Position }> = ({position}) => {
+const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number }> = ({position, currentPositionIndex}) => {
   return (
     <>
       {processCommentBefore(position)}
-      <span className="mainline-move">{positionToUci(position)}</span>
+      <span className={`mainline-move ${position.index === currentPositionIndex ? "active": ""}`}>{positionToUci(position)}</span>
       {processCommentAfter(position)}
-      {processVariations(position)}
+      {processVariations(position, 0, currentPositionIndex)}
     </>
   )
 }
@@ -40,9 +41,10 @@ interface VariationProps {
   depth: number
   open: boolean
   close: boolean
+  currentPositionIndex: number
 }
 
-const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => {
+const Variation: React.FC<VariationProps> = ({position, depth, open, close, currentPositionIndex}) => {
   const positions = flattenMoves(position)
   const hasSubvariations = positions.some(p => p.variations.length > 1)
   let block;
@@ -50,7 +52,7 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => 
     block = <div className="variation-d-1">
       {open && <span>[ </span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
           </span>
       {close ? <span> ]</span> : <span>; </span>}
     </div>
@@ -58,7 +60,7 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => 
     block = <div className="variation-d-1">
       {open && <span>( </span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
           </span>
       {close ? <span> )</span> : <span>; </span>}
     </div>
@@ -66,7 +68,7 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => 
     block = <span className="variation-d-2">
         {open && <span>(</span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
           </span>
           <span>{close ? ') ' : '; '}</span>
       </span>
@@ -76,23 +78,23 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close}) => 
   )
 }
 
-const VariationMove: React.FC<{ position: Position, depth: number }> = ({position, depth}) => {
+const VariationMove: React.FC<{ position: Position, depth: number, currentPositionIndex: number }> = ({position, depth, currentPositionIndex}) => {
   return (
     <>
       {processCommentBefore(position)}
-      <span className="variation-move">{positionToUci(position)}</span>
+      <span className={`variation-move ${position.index === currentPositionIndex ? "active": ""}`}>{positionToUci(position)}</span>
       {processCommentAfter(position)}
       {/*Only process a variation if position is the main move of the parent*/}
-      {position.parent.variations[0] === position && processVariations(position, depth)}
+      {position.parent.variations[0] === position && processVariations(position, depth, currentPositionIndex)}
     </>
   )
 }
 
-function processVariations(position: Position, currentDepth = 0): ReactElement<any, any> | null {
+function processVariations(position: Position, currentDepth = 0, currentPositionIndex: number): ReactElement<any, any> | null {
   if (position.parent?.variations?.length > 1) {
     return (<>
         {position.parent.variations.slice(1).map((p,i, tab) =>
-          <Variation position={p} depth={currentDepth + 1} open={i === 0} close={i === tab.length - 1}/>)}
+          <Variation position={p} depth={currentDepth + 1} open={i === 0} close={i === tab.length - 1} currentPositionIndex={currentPositionIndex}/>)}
       </>
     )
   }

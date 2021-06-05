@@ -3,6 +3,11 @@
   font-family: 'Chess', 'Noto Sans', sans-serif;
   font-weight: bold;
 }
+.active {
+  font-weight: bold;
+  background: #d1e4f6;
+  border-radius: 3px;
+}
 .comment {
   margin-right: 0.5em;
   font-family: 'Chess', 'Noto Sans', sans-serif;
@@ -11,6 +16,7 @@
 
 .variation-d-1 {
   margin-left: 0.7em;
+  flex-basis: 100%;
 }
 
 .variation-d-1 .variation-move {
