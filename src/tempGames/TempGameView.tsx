@@ -1,10 +1,8 @@
-import React, {Component, useEffect, useState} from 'react';
-import {Gameboard} from "../shared-components/chessboard/Gameboard";
+import React, {useEffect, useState} from 'react';
 import {NotationPanel} from "../shared-components/notation-panel/NotationPanel";
 import {ChessBoardWithRules} from "../shared-components/chessboard/ChessboardWithRules";
-import {Game, Position, Square} from "../libraries/chess";
+import {Position, Square} from "../libraries/chess";
 import {FirstPosition} from "../libraries/chess/Game";
-import {RouteProps} from "react-router";
 import {RouteComponentProps} from "react-router-dom";
 import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
 
@@ -42,6 +40,7 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
         commentBefore: ""
       }
       currentPos.variations.push(pos)
+
       setCurrentPos(pos)
       TempGamesService.updateTemporaryGame(currentGame)
     }

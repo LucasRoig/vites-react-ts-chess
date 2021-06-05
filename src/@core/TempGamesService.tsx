@@ -83,10 +83,15 @@ function updateTemporaryGame(game: TemporaryGame): void {
   }
 }
 
+function closeGame(tempId: number): void {
+  localStorage.setItem(localStorageKey, JSON.stringify(getLocalStorage().filter(g => g.temporaryId !== tempId)))
+}
+
 export default {
   newTemporaryGame,
   getTemporaryGame,
-  updateTemporaryGame
+  updateTemporaryGame,
+  closeGame
 };
 
 export type { TemporaryGame };

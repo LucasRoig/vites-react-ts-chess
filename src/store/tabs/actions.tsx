@@ -2,6 +2,7 @@ import {Tab} from "./TabsReducer";
 import TabsService from "../../@core/TabsService";
 import TempGamesService from "../../@core/TempGamesService"
 import {ThunkAction} from "redux-thunk";
+import TempGameView from "../../tempGames/TempGameView";
 
 const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
 const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
@@ -38,6 +39,11 @@ interface CloseTabActionType {
 }
 
 export function CloseTabAction(tab: Tab): CloseTabActionType {
+  let match = tab.path.match(/\/tempGames\/(\d+)/)
+  if (match) {
+    const id = parseInt(match[1])
+    TempGamesService.closeGame(id)
+  }
   TabsService.closeTab(tab)
   return {
     type: CLOSE_TAB_ACTION,
