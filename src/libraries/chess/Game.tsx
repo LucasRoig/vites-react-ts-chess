@@ -107,6 +107,65 @@ export function serializableGameToGame(game: SerializableGame): Game {
   }
 }
 
+export function gameToSerializableGame(game: Game): SerializableGame {
+  const allPositions: SerializablePosition[] = []
+
+  function positionToSerializablePosition(p: Position, isMainline: boolean): SerializablePosition {
+    let nextPositionIndex = undefined
+    if (p.variations.length) {
+      nextPositionIndex = positionToSerializablePosition(p.variations[0], true).index
+    }
+    let variationsIndexes: number[] = []
+    if (p.variations.length >= 2) {
+      variationsIndexes = p.variations.slice(1).map(v => positionToSerializablePosition(v, false).index)
+    }
+    const result: SerializablePosition = {
+      fen: p.fen,
+      index: p.index,
+      comment: p.comment,
+      commentBefore: p.commentBefore,
+      move: p.move,
+      san: p.san,
+      nags: p.nags,
+      nextPositionIndex: nextPositionIndex,
+      variationsIndexes,
+      isMainline
+    }
+    allPositions.push(result)
+    return result
+  }
+
+  const firstPosition: SerializablePosition = {
+    fen: game.firstPosition.fen,
+    index: game.firstPosition.index,
+    nags: game.firstPosition.nags,
+    comment: game.firstPosition.comment,
+    isMainline: true,
+    variationsIndexes: [],
+    san: "",
+    move: {from:"a1", to:"a1"} //dumb but necessary
+  }
+
+  for (let i = 0; i < game.firstPosition.variations.length; i++) {
+    const p = positionToSerializablePosition(game.firstPosition.variations[i], i == 0);
+    if (i == 0) {
+      firstPosition.nextPositionIndex = p.index
+    } else {
+      firstPosition.variationsIndexes.push(p.index)
+    }
+  }
+
+  allPositions.push(firstPosition)
+
+  const result: SerializableGame = {
+    id: game.id,
+    comment: game.comment,
+    headers: game.headers,
+    positions: allPositions
+  }
+  return result
+}
+
 export function gameToNonCircularGame(game: Game): NonCircularGame{
   //Workaround storybook inability to handle circular objects, this is ugly
   function positionToNonCircularPosition(p: Position): NonCircularPosition {

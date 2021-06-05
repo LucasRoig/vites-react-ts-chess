@@ -17,7 +17,7 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game}) => {
     line = flattenMoves((game as Game).firstPosition.variations[0])
   }
   return (
-    <div>
+    <div style={{width: "100%", height: "100%", display: "flex", flexWrap: "wrap", alignContent: "flex-start"}}>
       {game.comment && <div className="comment">{game.comment}</div>}
       {line.map(p => <MainLineMove key={p.index} position={p}/>)}
     </div>

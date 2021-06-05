@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
 import "./Header.scss"
 import {useAuth0} from "@auth0/auth0-react";
+import {useAppDispatch} from "../../store";
+import {OpenNewTempGameAction, OpenTabAction} from "../../store/tabs/actions";
 
 interface HeaderProps {
 
@@ -8,13 +10,17 @@ interface HeaderProps {
 
 const Header: React.FunctionComponent<HeaderProps> = () => {
     const {isAuthenticated} = useAuth0()
+    const dispatch = useAppDispatch();
+    function newGame() {
+        dispatch(OpenNewTempGameAction())
+    }
     return (
         <header className="header">
             <nav className="navbar">
                 <div className="navbar-menu">
                     <div className="navbar-start">
                         <div className="navbar-item">
-                            <button className="button is-light">New Game</button>
+                            <button className="button is-light" onClick={newGame}>New Game</button>
                         </div>
                     </div>
                     {isAuthenticated ? <RightSideAuthenticated/> : <RightSideNotAuthenticated/>}

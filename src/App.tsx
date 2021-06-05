@@ -12,6 +12,7 @@ import {useHistory} from "react-router-dom"
 import {LoadTabsAction} from "./store/tabs/actions";
 import {useAuth0} from "@auth0/auth0-react";
 import ApiService from "./@core/ApiService";
+import TempGameView from "./tempGames/TempGameView";
 
 function App() {
     let selectedTab = useAppSelector(s => s.tabs.selectedTab)
@@ -56,6 +57,7 @@ function App() {
                         </ProtectedRoute>
                         <ProtectedRoute path="/notebooks" exact component={Notebooks}>
                         </ProtectedRoute>
+                        <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
                     </Switch>
                 </div>
             </div>

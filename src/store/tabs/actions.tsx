@@ -1,12 +1,12 @@
 import {Tab} from "./TabsReducer";
 import TabsService from "../../@core/TabsService";
+import TempGamesService from "../../@core/TempGamesService"
 import {ThunkAction} from "redux-thunk";
 
 const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
 const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
 const CLOSE_TAB_ACTION = "CLOSE_TAB_ACTION"
 const LOAD_TABS_ACTION = "LOAD_TABS_ACTION"
-
 interface ClickTabActionType {
   type: typeof CLICK_TAB_ACTION
   payload: Tab
@@ -50,7 +50,7 @@ interface LoadTabsActionType {
   payload: Tab[]
 }
 
-// Exemple of async action
+// Example of async action
 // export const LoadTabsAction =  (): ThunkAction<void, {}, unknown, TabActionType> => async (dispatch) => {
 //   const response = await TabsService.fetchTabs()
 //   dispatch({
@@ -63,6 +63,14 @@ export const LoadTabsAction =  (): LoadTabsActionType => {
     type: LOAD_TABS_ACTION,
     payload: response
   }
+}
+
+export const OpenNewTempGameAction = (): TabActionType => {
+  const temporaryGame = TempGamesService.newTemporaryGame();
+  return OpenTabAction({
+    name: "New Game",
+    path: "/tempGames/" + temporaryGame.temporaryId
+  })
 }
 
 export type TabActionType = ClickTabActionType | OpenTabActionType | CloseTabActionType | LoadTabsActionType
