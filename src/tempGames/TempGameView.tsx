@@ -5,6 +5,8 @@ import {Game, Position, Square} from "../libraries/chess";
 import {FirstPosition} from "../libraries/chess/Game";
 import {RouteComponentProps} from "react-router-dom";
 import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
+import SaveGameModal from "../shared-components/SaveGameModal";
+import useModal from "../shared-components/UseModal";
 
 
 interface TempGameViewProps extends RouteComponentProps<{id: string}> {
@@ -14,6 +16,7 @@ interface TempGameViewProps extends RouteComponentProps<{id: string}> {
 const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
   const [currentGame, setCurrentGame] = useState<TemporaryGame>();
   const [currentPos, setCurrentPos] = useState<FirstPosition>();
+  const [isSaveGameModalOpen, toggleSaveGameModalOpen] = useModal()
 
   useEffect(() => {
     const gameId = parseInt(props.match.params.id);
@@ -107,6 +110,7 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
     <div style={{"display": "flex"}}>
       {currentPos && currentGame ?
         <>
+          <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen}/>
           <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
           <div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>
             <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
@@ -126,6 +130,7 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
                 </button>
               </p>
             </div>
+            <button className="button" onClick={toggleSaveGameModalOpen}>Save</button>
           </div>
         </>
         : <div>404</div>

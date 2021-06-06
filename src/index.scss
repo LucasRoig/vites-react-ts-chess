@@ -13,15 +13,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-@import '../node_modules/bulma/sass/utilities/_all.sass';
-@import '../node_modules/bulma/sass/base/_all.sass';
-@import '../node_modules/bulma/sass/elements/button.sass';
-@import '../node_modules/bulma/sass/components/navbar.sass';
-@import '../node_modules/bulma/sass/components/menu.sass';
-@import '../node_modules/bulma/sass/helpers/all.sass';
-@import '../node_modules/bulma/sass/components/tabs';
-@import '../node_modules/bulma/sass/form/all';
+//@import '../node_modules/bulma/sass/utilities/_all.sass';
+//@import '../node_modules/bulma/sass/base/_all.sass';
+//@import '../node_modules/bulma/sass/elements/button.sass';
+//@import '../node_modules/bulma/sass/components/navbar.sass';
+//@import '../node_modules/bulma/sass/components/menu.sass';
+//@import '../node_modules/bulma/sass/helpers/all.sass';
+//@import '../node_modules/bulma/sass/components/tabs';
+//@import '../node_modules/bulma/sass/form/all';
+//@import '../node_modules/bulma/sass/components/modal';
+@import '../node_modules/bulma/bulma';
 @import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+
 @font-face {
   font-family: 'Chess';
   src: url("lichess.chess.woff2");
