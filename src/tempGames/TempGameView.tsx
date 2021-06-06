@@ -71,13 +71,45 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
     }
   }
 
+  function goToPosition(position: Position) {
+    if (currentGame && currentPos) {
+      function findPos(p: Position): Position | undefined {
+        if (p.index === position.index) {
+          return p
+        } else {
+          for (let p2 of p.variations) {
+            let res = findPos(p2)
+            if (res) {
+              return res
+            }
+          }
+        }
+        return undefined
+      }
+      let pos: FirstPosition | undefined = undefined
+      if (currentGame.game.firstPosition.index === position.index) {
+        pos = currentGame.game.firstPosition
+      } else {
+        for (let p2 of currentGame.game.firstPosition.variations) {
+          let res = findPos(p2)
+          if (res) {
+            pos = res
+            break
+          }
+        }
+      }
+      if (pos) {
+        setCurrentPos(pos)
+      }
+    }
+  }
   return (
     <div style={{"display": "flex"}}>
       {currentPos && currentGame ?
         <>
           <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
           <div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>
-            <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index}/>
+            <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
             <div className="field has-addons">
               <p className="control">
                 <button className="button" onClick={previousMove}>

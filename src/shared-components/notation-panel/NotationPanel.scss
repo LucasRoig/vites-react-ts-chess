@@ -2,6 +2,7 @@
   margin-right: 0.5em;
   font-family: 'Chess', 'Noto Sans', sans-serif;
   font-weight: bold;
+  cursor: pointer;
 }
 .active {
   font-weight: bold;
@@ -22,6 +23,7 @@
 .variation-d-1 .variation-move {
   margin-right: 0.5em;
   font-family: 'Chess', 'Noto Sans', sans-serif;
+  cursor: pointer;
 }
 .variation-d-1 .variation-move:nth-last-child(1) {
   margin-right: 0;
@@ -31,6 +33,7 @@
   margin-right: 0.5em;
   font-family: 'Chess', 'Noto Sans', sans-serif;
   font-style: italic;
+  cursor: pointer;
 }
 
 .variation-d-2 .variation-move:nth-last-child(1) {

@@ -4,12 +4,15 @@ import "./NotationPanel.scss"
 import {fenToFullMoves, fenToLastMoveColor} from "../../libraries/chess/FenUtils";
 import {NonCircularGame, nonCircularGameToGame} from "../../libraries/chess/Game";
 
+type PositionClickedHandler = (pos: Position) => void
+
 export interface NotationPanelProps {
   game: Game | NonCircularGame,
   currentPositionIndex: number
+  onPosClick: PositionClickedHandler
 }
 
-const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex}) => {
+const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex, onPosClick}) => {
   let line: Position[] = []
   if (!(game as Game).firstPosition?.variations?.[0]?.parent) {
     game = nonCircularGameToGame(game)
@@ -20,18 +23,24 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex
   return (
     <div style={{width: "100%", height: "100%", display: "flex", flexWrap: "wrap", alignContent: "flex-start"}}>
       {game.comment && <div className="comment">{game.comment}</div>}
-      {line.map(p => <MainLineMove key={p.index} position={p} currentPositionIndex={currentPositionIndex}/>)}
+      {line.map(p => <MainLineMove key={p.index} position={p} currentPositionIndex={currentPositionIndex}
+                                   onPosClick={onPosClick}/>)}
     </div>
   )
 }
 
-const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number }> = ({position, currentPositionIndex}) => {
+const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
+  ({position, currentPositionIndex, onPosClick }) => {
+  function onClick() {
+    onPosClick(position)
+  }
   return (
     <>
       {processCommentBefore(position)}
-      <span className={`mainline-move ${position.index === currentPositionIndex ? "active": ""}`}>{positionToUci(position)}</span>
+      <span onClick={onClick}
+        className={`mainline-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
       {processCommentAfter(position)}
-      {processVariations(position, 0, currentPositionIndex)}
+      {processVariations(position, 0, currentPositionIndex, onPosClick)}
     </>
   )
 }
@@ -42,9 +51,10 @@ interface VariationProps {
   open: boolean
   close: boolean
   currentPositionIndex: number
+  onPosClick: PositionClickedHandler
 }
 
-const Variation: React.FC<VariationProps> = ({position, depth, open, close, currentPositionIndex}) => {
+const Variation: React.FC<VariationProps> = ({position, depth, open, close, currentPositionIndex, onPosClick}) => {
   const positions = flattenMoves(position)
   const hasSubvariations = positions.some(p => p.variations.length > 1)
   let block;
@@ -52,7 +62,8 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
     block = <div className="variation-d-1">
       {open && <span>[ </span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth}
+                                               currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
           </span>
       {close ? <span> ]</span> : <span>; </span>}
     </div>
@@ -60,7 +71,8 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
     block = <div className="variation-d-1">
       {open && <span>( </span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth}
+                                               currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
           </span>
       {close ? <span> )</span> : <span>; </span>}
     </div>
@@ -68,7 +80,8 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
     block = <span className="variation-d-2">
         {open && <span>(</span>}
       <span>
-            {positions.map(p => <VariationMove position={p} depth={depth} currentPositionIndex={currentPositionIndex}/>)}
+            {positions.map(p => <VariationMove position={p} depth={depth}
+                                               currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
           </span>
           <span>{close ? ') ' : '; '}</span>
       </span>
@@ -78,23 +91,29 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
   )
 }
 
-const VariationMove: React.FC<{ position: Position, depth: number, currentPositionIndex: number }> = ({position, depth, currentPositionIndex}) => {
+const VariationMove: React.FC<{ position: Position, depth: number, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
+  ({position, depth, currentPositionIndex, onPosClick}) => {
+  function onClick() {
+    onPosClick(position)
+  }
   return (
     <>
       {processCommentBefore(position)}
-      <span className={`variation-move ${position.index === currentPositionIndex ? "active": ""}`}>{positionToUci(position)}</span>
+      <span onClick={onClick}
+        className={`variation-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
       {processCommentAfter(position)}
       {/*Only process a variation if position is the main move of the parent*/}
-      {position.parent.variations[0] === position && processVariations(position, depth, currentPositionIndex)}
+      {position.parent.variations[0] === position && processVariations(position, depth, currentPositionIndex, onPosClick)}
     </>
   )
 }
 
-function processVariations(position: Position, currentDepth = 0, currentPositionIndex: number): ReactElement<any, any> | null {
+function processVariations(position: Position, currentDepth = 0, currentPositionIndex: number, onPosClick: PositionClickedHandler): ReactElement<any, any> | null {
   if (position.parent?.variations?.length > 1) {
     return (<>
-        {position.parent.variations.slice(1).map((p,i, tab) =>
-          <Variation position={p} depth={currentDepth + 1} open={i === 0} close={i === tab.length - 1} currentPositionIndex={currentPositionIndex}/>)}
+        {position.parent.variations.slice(1).map((p, i, tab) =>
+          <Variation position={p} depth={currentDepth + 1} open={i === 0} close={i === tab.length - 1}
+                     currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
       </>
     )
   }
