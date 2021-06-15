@@ -1,8 +1,9 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import ChessDbService, {ChessDb} from "../@core/ChessDbService";
 import {toast} from "react-toastify";
-import useModal from "../shared-components/UseModal";
 import {ConfirmationModal} from "../shared-components/ConfirmationModal";
+import {useAppDispatch} from "../store";
+import {OpenTabAction} from "../store/tabs/actions";
 
 const Databases: React.FunctionComponent = () => {
   const [dbs, setDbs] = useState<ChessDb[]>([])
@@ -29,6 +30,7 @@ const DbTable: React.FunctionComponent<{
   dbs: ChessDb[],
   onDbDeleted: (db: ChessDb) => void
 }> = ({dbs, onDbDeleted}) => {
+  const dispatch = useAppDispatch()
   const [isDeleteModalOpen, toggleDeleteModal] = useState(false)
   const [deleteModalMessage, setDeleteModalMessage] = useState("")
   const [deleteModalCb, setDeleteModalCb] = useState<() => void>(() => {
@@ -45,6 +47,9 @@ const DbTable: React.FunctionComponent<{
       onDbDeleted(db)
     })
   }
+  const openDatabase = (db: ChessDb) => () => {
+    dispatch(OpenTabAction({name: db.name, path: `/databases/${db.id}`}))
+  }
   return (
     <table className="table" style={{width: "100%"}}>
       <thead>
@@ -56,7 +61,9 @@ const DbTable: React.FunctionComponent<{
       <tbody>
       {dbs.map(db =>
         <tr key={db.id}>
-          <td style={{verticalAlign: "middle"}}>{db.name}</td>
+          <td style={{verticalAlign: "middle"}} >
+            <button className="button is-ghost" onClick={openDatabase(db)}>{db.name}</button>
+          </td>
           <td style={{textAlign: "right"}}>
             <button className="button is-danger is-outlined is-small" onClick={openDeleteModal(db)}>
               <span>Delete</span>
@@ -76,6 +83,7 @@ const DbTable: React.FunctionComponent<{
 
 
 const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void }> = ({onDbCreated}) => {
+  const dispatch = useAppDispatch()
   const [inputDbName, setInputDbName] = useState("")
   const [createButtonEnabled, setCreateButtonEnabled] = useState(false)
   const [isCreateDbLoading, setCreateDbLoading] = useState(false)
@@ -91,7 +99,7 @@ const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void
       setCreateDbLoading(false)
       setInputDbName("")
       setCreateButtonEnabled(false)
-      toast.success(`Database ${name} has been created`)
+      dispatch(OpenTabAction({name: res.name, path: `/databases/${res.id}`}))
       onDbCreated(res)
     })
   }

@@ -13,6 +13,7 @@ import {LoadTabsAction} from "./store/tabs/actions";
 import {useAuth0} from "@auth0/auth0-react";
 import ApiService from "./@core/ApiService";
 import TempGameView from "./tempGames/TempGameView";
+import {DatabaseDetails} from "./databases/DatabaseDetails";
 
 function App() {
     let selectedTab = useAppSelector(s => s.tabs.selectedTab)
@@ -53,10 +54,9 @@ function App() {
                         <Route path="/" exact>
                             <div>Select a Tab</div>
                         </Route>
-                        <ProtectedRoute path="/databases" exact component={Databases}>
-                        </ProtectedRoute>
-                        <ProtectedRoute path="/notebooks" exact component={Notebooks}>
-                        </ProtectedRoute>
+                        <ProtectedRoute path="/databases" exact component={Databases}/>
+                        <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
+                        <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
                         <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
                     </Switch>
                 </div>
