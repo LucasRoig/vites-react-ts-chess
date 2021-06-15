@@ -30,20 +30,21 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex
 }
 
 const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
-  ({position, currentPositionIndex, onPosClick }) => {
-  function onClick() {
-    onPosClick(position)
+  ({position, currentPositionIndex, onPosClick}) => {
+    function onClick() {
+      onPosClick(position)
+    }
+
+    return (
+      <>
+        {processCommentBefore(position)}
+        <span onClick={onClick}
+              className={`mainline-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
+        {processCommentAfter(position)}
+        {processVariations(position, 0, currentPositionIndex, onPosClick)}
+      </>
+    )
   }
-  return (
-    <>
-      {processCommentBefore(position)}
-      <span onClick={onClick}
-        className={`mainline-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
-      {processCommentAfter(position)}
-      {processVariations(position, 0, currentPositionIndex, onPosClick)}
-    </>
-  )
-}
 
 interface VariationProps {
   position: Position
@@ -60,7 +61,7 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
   let block;
   if (depth === 1) {
     block = <div className="variation-d-1">
-      {open && <span>[ </span>}
+      {open && <span style={{whiteSpace: "nowrap"}}>[ </span>}
       <span>
             {positions.map(p => <VariationMove position={p} depth={depth}
                                                currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
@@ -69,21 +70,21 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
     </div>
   } else if (hasSubvariations) {
     block = <div className="variation-d-1">
-      {open && <span>( </span>}
+      {open && <span style={{whiteSpace: "nowrap"}}>( </span>}
       <span>
             {positions.map(p => <VariationMove position={p} depth={depth}
                                                currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
           </span>
-      {close ? <span> )</span> : <span>; </span>}
+      {close ? <span > )</span> : <span>; </span>}
     </div>
   } else {
     block = <span className="variation-d-2">
-        {open && <span>(</span>}
+        {open && <span style={{whiteSpace: "nowrap"}}>(</span>}
       <span>
             {positions.map(p => <VariationMove position={p} depth={depth}
                                                currentPositionIndex={currentPositionIndex} onPosClick={onPosClick}/>)}
           </span>
-          <span>{close ? ') ' : '; '}</span>
+          <span style={{whiteSpace: "nowrap"}}>{close ? ') ' : '; '}</span>
       </span>
   }
   return (
@@ -93,20 +94,21 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
 
 const VariationMove: React.FC<{ position: Position, depth: number, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
   ({position, depth, currentPositionIndex, onPosClick}) => {
-  function onClick() {
-    onPosClick(position)
+    function onClick() {
+      onPosClick(position)
+    }
+
+    return (
+      <>
+        {processCommentBefore(position)}
+        <span onClick={onClick}
+              className={`variation-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
+        {processCommentAfter(position)}
+        {/*Only process a variation if position is the main move of the parent*/}
+        {position.parent.variations[0] === position && processVariations(position, depth, currentPositionIndex, onPosClick)}
+      </>
+    )
   }
-  return (
-    <>
-      {processCommentBefore(position)}
-      <span onClick={onClick}
-        className={`variation-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
-      {processCommentAfter(position)}
-      {/*Only process a variation if position is the main move of the parent*/}
-      {position.parent.variations[0] === position && processVariations(position, depth, currentPositionIndex, onPosClick)}
-    </>
-  )
-}
 
 function processVariations(position: Position, currentDepth = 0, currentPositionIndex: number, onPosClick: PositionClickedHandler): ReactElement<any, any> | null {
   if (position.parent?.variations?.length > 1) {
