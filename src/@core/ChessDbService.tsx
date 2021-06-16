@@ -20,11 +20,32 @@ function getDbDetails(id: number): Promise<ChessDbDetails> {
   return ApiService.get<ChessDbDetails>(`/db/${id}`)
 }
 
+function createGame(
+  {
+    dbId,
+    white,
+    black,
+    date,
+    event,
+    result
+  }: { dbId: number, white: string, black: string, date: string, event: string, result: string }): Promise<GameHeader> {
+  return ApiService.post<GameHeader>(`/db/${dbId}/games`, {
+    game: {
+      white,
+      black,
+      date,
+      event,
+      result
+    }
+  })
+}
+
 export default {
   createChessDb,
   fetchChessDb,
   deleteChessDb,
-  getDbDetails
+  getDbDetails,
+  createGame
 }
 
 export interface ChessDb {
