@@ -56,6 +56,7 @@ function App() {
                         </Route>
                         <ProtectedRoute path="/databases" exact component={Databases}/>
                         <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
+                        <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
                         <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
                         <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
                     </Switch>

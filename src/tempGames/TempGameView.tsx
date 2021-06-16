@@ -9,7 +9,7 @@ import SaveGameModal from "../shared-components/SaveGameModal";
 import useModal from "../shared-components/UseModal";
 
 
-interface TempGameViewProps extends RouteComponentProps<{id: string}> {
+interface TempGameViewProps extends RouteComponentProps<{id: string, dbId?: string}> {
 
 }
 
@@ -19,14 +19,21 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
   const [isSaveGameModalOpen, toggleSaveGameModalOpen] = useModal()
 
   useEffect(() => {
-    const gameId = parseInt(props.match.params.id);
-    const temporaryGame = TempGamesService.getTemporaryGame(gameId);
-    setCurrentGame(temporaryGame)
-    let pos = temporaryGame?.game.firstPosition
-    while (pos?.variations[0]) {
-      pos = pos?.variations[0]
-    }
-    setCurrentPos(pos)
+    (async () => {
+      const gameId = parseInt(props.match.params.id);
+      let temporaryGame;
+      if (!props.match.params.dbId) {
+        temporaryGame = TempGamesService.getTemporaryGame(gameId);
+      } else {
+        temporaryGame = await TempGamesService.getTempGameFromDatabase(gameId, parseInt(props.match.params.dbId))
+      }
+      setCurrentGame(temporaryGame)
+      let pos = temporaryGame?.game.firstPosition
+      while (pos?.variations[0]) {
+        pos = pos?.variations[0]
+      }
+      setCurrentPos(pos)
+    })()
   }, [])
 
   function onMove(from: Square, to: Square, san: string, fen: string) {

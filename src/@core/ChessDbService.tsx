@@ -20,6 +20,10 @@ function getDbDetails(id: number): Promise<ChessDbDetails> {
   return ApiService.get<ChessDbDetails>(`/db/${id}`)
 }
 
+function getGameFromDb(gameId: number, dbId: number): Promise<GameHeader | undefined> {
+  return getDbDetails(dbId).then(details => details.games.find(g => g.id == gameId))
+}
+
 function createGame(
   {
     dbId,
@@ -45,7 +49,8 @@ export default {
   fetchChessDb,
   deleteChessDb,
   getDbDetails,
-  createGame
+  createGame,
+  getGameFromDb
 }
 
 export interface ChessDb {

@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {RouteComponentProps} from "react-router-dom";
 import ChessDbService, {ChessDbDetails, GameHeader} from "../@core/ChessDbService";
+import {useAppDispatch} from "../store";
+import {OpenTabAction} from "../store/tabs/actions";
 
 interface DatabaseDetailsProps extends RouteComponentProps<{id: string}> {
 
@@ -23,6 +25,11 @@ const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
 }
 
 const GameTable: React.FC<{games: GameHeader[]}> = ({games}) => {
+  const dispatch = useAppDispatch();
+  const openGame = (game: GameHeader) => () => {
+    let name = `${game.white}${game.black ? " - " + game.black : ""}`;
+    dispatch(OpenTabAction({name: name, path:`/databases/${game.chessDbId}/games/${game.id}`}))
+  }
   return(
     <table className="table" style={{width: "100%"}}>
       <thead>
@@ -38,11 +45,11 @@ const GameTable: React.FC<{games: GameHeader[]}> = ({games}) => {
       <tbody>
       { games.map(game =>
         <tr key={game.id}>
-          <td>{game.white}</td>
-          <td>{game.black}</td>
-          <td>{game.result}</td>
-          <td>{game.event}</td>
-          <td>{game.date}</td>
+          <td><button className="button is-ghost" onClick={openGame(game)}>{game.white}</button></td>
+          <td style={{verticalAlign: "middle"}}>{game.black}</td>
+          <td style={{verticalAlign: "middle"}}>{game.result}</td>
+          <td style={{verticalAlign: "middle"}}>{game.event}</td>
+          <td style={{verticalAlign: "middle"}}>{game.date}</td>
         </tr>
       )}
       </tbody>
