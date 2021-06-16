@@ -4,6 +4,8 @@ import ChessDbService, {ChessDb} from "../@core/ChessDbService";
 import {Simulate} from "react-dom/test-utils";
 import contextMenu = Simulate.contextMenu;
 import {toast} from "react-toastify";
+import {useAppDispatch, useAppSelector} from "../store";
+import {CloseTabAction, OpenGameFromDbAction} from "../store/tabs/actions";
 
 
 interface SaveGameModalProps {
@@ -14,6 +16,8 @@ interface SaveGameModalProps {
 const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hide}) => {
   const [chessDbs, setChessDb] = useState<ChessDb[]>();
   const [selectedDbId, setSelectedDbId] = useState<number>()
+  const currentTab = useAppSelector(s => s.tabs.selectedTab)
+  const dispatch = useAppDispatch()
   useEffect(() => {
     ChessDbService.fetchChessDb().then(dbs => {
       setChessDb(dbs)
@@ -59,9 +63,12 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
       dbId: selectedDbId!, white, black, date, event, result
     }).then(res => {
       setIsSubmitting(false)
-      console.log(res)
       hide()
       toast.success("Successfully saved")
+      if (currentTab) {
+        dispatch(CloseTabAction(currentTab))
+      }
+      dispatch(OpenGameFromDbAction(res.id, res.chessDbId, res.white, res.black))
     })
   }
   return isOpen ? ReactDOM.createPortal(

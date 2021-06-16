@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {RouteComponentProps} from "react-router-dom";
 import ChessDbService, {ChessDbDetails, GameHeader} from "../@core/ChessDbService";
 import {useAppDispatch} from "../store";
-import {OpenTabAction} from "../store/tabs/actions";
+import {OpenGameFromDbAction, OpenTabAction} from "../store/tabs/actions";
 
 interface DatabaseDetailsProps extends RouteComponentProps<{id: string}> {
 
@@ -27,8 +27,7 @@ const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
 const GameTable: React.FC<{games: GameHeader[]}> = ({games}) => {
   const dispatch = useAppDispatch();
   const openGame = (game: GameHeader) => () => {
-    let name = `${game.white}${game.black ? " - " + game.black : ""}`;
-    dispatch(OpenTabAction({name: name, path:`/databases/${game.chessDbId}/games/${game.id}`}))
+    dispatch(OpenGameFromDbAction(game.id, game.chessDbId, game.white, game.black))
   }
   return(
     <table className="table" style={{width: "100%"}}>

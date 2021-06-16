@@ -14,22 +14,11 @@ import {useAuth0} from "@auth0/auth0-react";
 import ApiService from "./@core/ApiService";
 import TempGameView from "./tempGames/TempGameView";
 import {DatabaseDetails} from "./databases/DatabaseDetails";
+import {TabRouterHandler} from "./TabRouterHandler";
 
 function App() {
-    let selectedTab = useAppSelector(s => s.tabs.selectedTab)
     const dispatch = useAppDispatch()
-    const router = useHistory()
     const {isAuthenticated, getAccessTokenSilently} = useAuth0()
-
-    useEffect(() => {
-        if (selectedTab && selectedTab.path != router.location.hash) {
-            router.push(selectedTab.path)
-        }
-        if (!selectedTab) {
-            router.push("/")
-        }
-    }, [selectedTab])
-
     useEffect(() => {
         if (isAuthenticated) {
             getAccessTokenSilently().then(t => {
@@ -45,6 +34,7 @@ function App() {
 
     return (
         <>
+            <TabRouterHandler/>
             <Header/>
             <div className="is-flex">
                 <Sidebar/>

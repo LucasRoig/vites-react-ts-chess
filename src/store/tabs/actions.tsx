@@ -1,8 +1,6 @@
 import {Tab} from "./TabsReducer";
 import TabsService from "../../@core/TabsService";
 import TempGamesService from "../../@core/TempGamesService"
-import {ThunkAction} from "redux-thunk";
-import TempGameView from "../../tempGames/TempGameView";
 
 const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
 const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
@@ -44,6 +42,12 @@ export function CloseTabAction(tab: Tab): CloseTabActionType {
     const id = parseInt(match[1])
     TempGamesService.closeGame(id)
   }
+  match = tab.path.match(/\/databases\/(\d+)\/games\/(\d+)/)
+  if (match) {
+    const dbId = parseInt(match[1])
+    const gameId = parseInt(match[2])
+    TempGamesService.closeGameFromDb(gameId, dbId)
+  }
   TabsService.closeTab(tab)
   return {
     type: CLOSE_TAB_ACTION,
@@ -76,6 +80,13 @@ export const OpenNewTempGameAction = (): TabActionType => {
   return OpenTabAction({
     name: "New Game",
     path: "/tempGames/" + temporaryGame.temporaryId
+  })
+}
+
+export const OpenGameFromDbAction = (gameId: number, dbId: number, white:string, black: string): TabActionType => {
+  return OpenTabAction({
+    name: `${white}${black ? " - " + black : ""}`,
+    path: `/databases/${dbId}/games/${gameId}`
   })
 }
 

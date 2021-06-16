@@ -46,7 +46,7 @@ function getLocalStorage(): SerializableTempGame[] {
   }
 }
 
-function addToLocalStorage(game: Game, saveData: null | {gameId: number, dbId: number} = null): TemporaryGame {
+function addToLocalStorage(game: Game, saveData: null | { gameId: number, dbId: number } = null): TemporaryGame {
   const games = getLocalStorage();
   const id = Math.max(...games.map(g => g.temporaryId), -1) + 1
   const tempGame: TemporaryGame = {
@@ -83,6 +83,7 @@ function getTemporaryGame(id: number): TemporaryGame | undefined {
 }
 
 function getTempGameFromDatabase(gameId: number, dbId: number): Promise<TemporaryGame | undefined> {
+  console.log("open from db")
   const find = getLocalStorage().find(g => g.saveData && g.saveData.dbId == dbId && g.saveData.gameId == gameId);
   if (find) {
     return new Promise<TemporaryGame>(resolve => resolve({
@@ -111,7 +112,6 @@ function getTempGameFromDatabase(gameId: number, dbId: number): Promise<Temporar
 }
 
 function updateTemporaryGame(game: TemporaryGame): void {
-  console.log(game)
   const games = getLocalStorage();
   const index = games.findIndex(t => t.temporaryId === game.temporaryId);
   if (index >= 0) {
@@ -128,12 +128,21 @@ function closeGame(tempId: number): void {
   localStorage.setItem(localStorageKey, JSON.stringify(getLocalStorage().filter(g => g.temporaryId !== tempId)))
 }
 
+function closeGameFromDb(gameId: number, dbId: number) {
+  localStorage.setItem(localStorageKey,
+    JSON.stringify(
+      getLocalStorage().filter(g => !g.saveData || g.saveData.dbId !== dbId || g.saveData.gameId !== gameId)
+    )
+  )
+}
+
 export default {
   newTemporaryGame,
   getTemporaryGame,
   updateTemporaryGame,
   closeGame,
-  getTempGameFromDatabase
+  getTempGameFromDatabase,
+  closeGameFromDb
 };
 
 export type {TemporaryGame};
