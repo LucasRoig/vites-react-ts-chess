@@ -117,7 +117,7 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
     <div style={{"display": "flex"}}>
       {currentPos && currentGame ?
         <>
-          <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen}/>
+          <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen} game={currentGame}/>
           <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
           <div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>
             <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
