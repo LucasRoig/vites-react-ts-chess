@@ -3,6 +3,8 @@ import ChessDbService, {ChessDb} from "../@core/ChessDbService";
 import {toast} from "react-toastify";
 import {ConfirmationModal} from "../shared-components/ConfirmationModal";
 import {useAppDispatch} from "../store";
+import {useFormik} from "formik"
+
 import {OpenTabAction} from "../store/tabs/actions";
 
 const Databases: React.FunctionComponent = () => {
@@ -116,6 +118,36 @@ const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void
       </p>
     </div>
   )
+}
+
+interface CreateDbModalProps {
+  isOpen: boolean,
+  hide: () => void
+}
+
+const CreateDbModal: React.FunctionComponent<CreateDbModalProps> = ({isOpen, hide}) => {
+  const formik = useFormik({
+    initialValues: {
+      name: ""
+    },
+    onSubmit: values => {
+      console.log(values)
+    }
+  })
+  return <Modal isOpen={isOpen} hide={hide} title={"Create database"}
+                buttons={
+                  <>
+                    <button className="button is-success" onClick={formik.submitForm}>Save</button>
+                    <button className="button" onClick={hide}>Cancel</button>
+                  </>
+                }
+                content={
+                  <>
+                    <HorizontalField name="name" label="Name" placeholder="DatabaseName" type="text"
+                                     onChange={formik.handleChange} value={formik.values.name}/>
+                  </>
+                }
+  />
 }
 
 export {

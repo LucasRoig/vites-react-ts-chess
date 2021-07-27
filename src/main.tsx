@@ -12,8 +12,8 @@ import 'react-toastify/dist/ReactToastify.min.css';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk" redirectUri={window.location.origin} audience="chess-faste">
-          <BrowserRouter >
+      <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk" redirectUri={window.location.origin} audience="http://nest-chess-api.athomeprod.fr">
+          <BrowserRouter>
             <App />
             <ToastContainer/>
           </BrowserRouter>

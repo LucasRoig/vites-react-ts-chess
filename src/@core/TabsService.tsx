@@ -1,5 +1,4 @@
 import {Tab} from "../store/tabs/TabsReducer";
-import ApiService from "./ApiService";
 
 function getLocalStorageTabs(): Tab[]{
   const tabsStr = localStorage.getItem("tabs");
