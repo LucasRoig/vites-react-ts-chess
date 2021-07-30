@@ -7,6 +7,7 @@ import {RouteComponentProps} from "react-router-dom";
 import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
 import SaveGameModal from "../shared-components/SaveGameModal";
 import useModal from "../shared-components/UseModal";
+import {toast} from "react-toastify";
 
 
 interface TempGameViewProps extends RouteComponentProps<{id: string, dbId?: string}> {
@@ -20,12 +21,18 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const gameId = parseInt(props.match.params.id);
+      const gameId = props.match.params.id;
       let temporaryGame;
-      if (!props.match.params.dbId) {
-        temporaryGame = TempGamesService.getTemporaryGame(gameId);
-      } else {
-        temporaryGame = await TempGamesService.getTempGameFromDatabase(gameId, parseInt(props.match.params.dbId))
+      try {
+        if (!props.match.params.dbId) {
+          temporaryGame = TempGamesService.getTemporaryGame(parseInt(gameId));
+        } else {
+          temporaryGame = await TempGamesService.getTempGameFromDatabase(gameId, props.match.params.dbId)
+        }
+      } catch (err: unknown) {
+        console.error(err)
+        toast.error('Error while opening game')
+        return
       }
       setCurrentGame(temporaryGame)
       let pos = temporaryGame?.game.firstPosition

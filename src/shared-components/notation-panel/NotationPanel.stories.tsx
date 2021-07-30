@@ -18,5 +18,5 @@ const Template: Story<PropsWithChildren<NotationPanelProps>> = ({...args}) => {
 
 export const Panel = Template.bind({});
 Panel.args = {
-  game:  gameToNonCircularGame(serializableGameToGame(simpleGame.game as SerializableGame))
+  game:  gameToNonCircularGame(serializableGameToGame(simpleGame.game as unknown as SerializableGame))
 };

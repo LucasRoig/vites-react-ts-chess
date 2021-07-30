@@ -20,7 +20,7 @@ export type Position = FirstPosition & {
 }
 
 export interface Game {
-  id: number
+  id: string
   headers: Headers
   firstPosition: FirstPosition
   comment?: string
@@ -53,7 +53,7 @@ export interface SerializablePosition {
 
 export interface SerializableGame {
   headers: Headers
-  id: number
+  id: string
   comment?: string
   positions: SerializablePosition[]
 }

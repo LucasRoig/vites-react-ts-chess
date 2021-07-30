@@ -44,8 +44,8 @@ export function CloseTabAction(tab: Tab): CloseTabActionType {
   }
   match = tab.path.match(/\/databases\/(\d+)\/games\/(\d+)/)
   if (match) {
-    const dbId = parseInt(match[1])
-    const gameId = parseInt(match[2])
+    const dbId = match[1]
+    const gameId = match[2]
     TempGamesService.closeGameFromDb(gameId, dbId)
   }
   TabsService.closeTab(tab)

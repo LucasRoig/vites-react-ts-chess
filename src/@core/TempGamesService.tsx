@@ -6,8 +6,8 @@ interface TemporaryGame {
   temporaryId: number,
   game: Game,
   saveData: null | {
-    gameId: number,
-    dbId: number
+    gameId: string,
+    dbId: string
   }
 }
 
@@ -15,8 +15,8 @@ interface SerializableTempGame {
   temporaryId: number,
   game: SerializableGame,
   saveData: null | {
-    gameId: number,
-    dbId: number
+    gameId: string,
+    dbId: string
   }
 }
 
@@ -30,7 +30,7 @@ function newGame(): Game {
     nags: []
   }
   const game: Game = {
-    id: 0,
+    id: "",
     firstPosition: firstPosition,
     headers: {}
   }
@@ -46,7 +46,7 @@ function getLocalStorage(): SerializableTempGame[] {
   }
 }
 
-function addToLocalStorage(game: Game, saveData: null | { gameId: number, dbId: number } = null): TemporaryGame {
+function addToLocalStorage(game: Game, saveData: null | { gameId: string, dbId: string } = null): TemporaryGame {
   const games = getLocalStorage();
   const id = Math.max(...games.map(g => g.temporaryId), -1) + 1
   const tempGame: TemporaryGame = {
@@ -82,7 +82,7 @@ function getTemporaryGame(id: number): TemporaryGame | undefined {
   }
 }
 
-function getTempGameFromDatabase(gameId: number, dbId: number): Promise<TemporaryGame | undefined> {
+function getTempGameFromDatabase(gameId: string, dbId: string): Promise<TemporaryGame | undefined> {
   console.log("open from db")
   const find = getLocalStorage().find(g => g.saveData && g.saveData.dbId == dbId && g.saveData.gameId == gameId);
   if (find) {
@@ -92,20 +92,12 @@ function getTempGameFromDatabase(gameId: number, dbId: number): Promise<Temporar
       saveData: find.saveData
     }))
   } else {
-    return ChessDbService.getGameFromDb(gameId, dbId).then(g => {
+    return ChessDbService.getGame(gameId).then(g => {
       if (!g) {
         return undefined
       }
-      const game = newGame()
-      game.id = g.id
-      game.headers = {
-        "white": g.white,
-        "black": g.black,
-        "date": g.date,
-        "event": g.event,
-        "result": g.result
-      }
-      let temporaryGame = addToLocalStorage(game, {gameId: g.id, dbId: g.chessDbId});
+
+      let temporaryGame = addToLocalStorage(g, {gameId: g.id, dbId: dbId});
       return temporaryGame
     })
   }
@@ -128,7 +120,7 @@ function closeGame(tempId: number): void {
   localStorage.setItem(localStorageKey, JSON.stringify(getLocalStorage().filter(g => g.temporaryId !== tempId)))
 }
 
-function closeGameFromDb(gameId: number, dbId: number) {
+function closeGameFromDb(gameId: string, dbId: string) {
   localStorage.setItem(localStorageKey,
     JSON.stringify(
       getLocalStorage().filter(g => !g.saveData || g.saveData.dbId !== dbId || g.saveData.gameId !== gameId)

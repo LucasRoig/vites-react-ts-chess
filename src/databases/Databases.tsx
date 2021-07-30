@@ -6,7 +6,7 @@ import {useAppDispatch} from "../store";
 import {useFormik} from "formik"
 
 import {OpenTabAction} from "../store/tabs/actions";
-import {HorizontalField} from "../shared-components/HorizontalField";
+import {HorizontalInput} from "../shared-components/inputs/HorizontalInput";
 import {Modal} from "../shared-components/Modal";
 
 const Databases: React.FunctionComponent = () => {
@@ -151,7 +151,7 @@ const CreateDbModal: React.FunctionComponent<CreateDbModalProps> = ({isOpen, hid
                 }
                 content={
                   <>
-                    <HorizontalField name="name" label="Name" placeholder="DatabaseName" type="text"
+                    <HorizontalInput name="name" label="Name" placeholder="DatabaseName" type="text"
                                      onChange={formik.handleChange} value={formik.values.name}/>
                   </>
                 }
