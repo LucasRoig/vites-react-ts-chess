@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-interface ConfirmationModalProps {
+export interface ConfirmationModalProps {
   isOpen: boolean,
   onValidate: () => void
   onCancel: () => void

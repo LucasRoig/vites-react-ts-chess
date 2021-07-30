@@ -46,30 +46,6 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
   }, [])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // const submit = () => {
-  //   if (!formik.isValid) {
-  //     return
-  //   }
-  //   setIsSubmitting(true)
-  //   if (game.saveData !== null) {
-  //     toast.error("Update game is not implemented yet")
-  //     setIsSubmitting(false)
-  //   } else {
-  //     const { white, black, date, event, result, database} = formik.values
-  //     ChessDbService.createGame({
-  //       dbId: database, white, black, date, event, result
-  //     }).then(res => {
-  //       setIsSubmitting(false)
-  //       hideAndReset()
-  //       toast.success("Successfully saved")
-  //       if (currentTab) {
-  //         dispatch(CloseTabAction(currentTab))
-  //       }
-  //       dispatch(OpenGameFromDbAction(res.id, res.chessDbId, res.white, res.black))
-  //     })
-  //   }
-  // }
-
   let initialValues = useMemo(() => ({
     database: "",
       white: game.game.headers["white"] || "",

@@ -1,13 +1,15 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import ChessDbService, {ChessDb} from "../@core/ChessDbService";
 import {toast} from "react-toastify";
-import {ConfirmationModal} from "../shared-components/ConfirmationModal";
+import {ConfirmationModal} from "../shared-components/confirmation-modal/ConfirmationModal";
 import {useAppDispatch} from "../store";
 import {useFormik} from "formik"
 
 import {OpenTabAction} from "../store/tabs/actions";
 import {HorizontalInput} from "../shared-components/inputs/HorizontalInput";
 import {Modal} from "../shared-components/Modal";
+import {useConfirmationModalContext} from "../shared-components/confirmation-modal/ConfirmationModalContext";
+import {DeleteButton} from "../shared-components/buttons/DeleteButton";
 
 const Databases: React.FunctionComponent = () => {
   const [dbs, setDbs] = useState<ChessDb[]>([])
@@ -16,14 +18,17 @@ const Databases: React.FunctionComponent = () => {
       toast.error("cannot fetch databases")
     })
   }, [])
+
   const addDb = (db: ChessDb) => {
     const newDbs = [...dbs, db]
     setDbs(newDbs)
   }
+
   const removeDb = (db: ChessDb) => {
     const newDbs = dbs.filter(d => d !== db)
     setDbs(newDbs)
   }
+
   return (
     <div style={{margin: "1em"}}>
       <CreateDbForm onDbCreated={addDb}/>
@@ -37,20 +42,13 @@ const DbTable: React.FunctionComponent<{
   onDbDeleted: (db: ChessDb) => void
 }> = ({dbs, onDbDeleted}) => {
   const dispatch = useAppDispatch()
-  const [isDeleteModalOpen, toggleDeleteModal] = useState(false)
-  const [deleteModalMessage, setDeleteModalMessage] = useState("")
-  const [deleteModalCb, setDeleteModalCb] = useState<() => void>(() => {
-  })
-  const openDeleteModal = (db: ChessDb) => () => {
-    setDeleteModalMessage("Do you really want to delete the database : " + db.name)
-    toggleDeleteModal(true)
-    setDeleteModalCb(() => deleteDb(db))
-  }
   const deleteDb = (db: ChessDb) => () => {
     ChessDbService.deleteChessDb(db).then(() => {
       toast.success(`Database ${db.name} deleted`)
-      toggleDeleteModal(false)
       onDbDeleted(db)
+    }).catch(err => {
+      console.error(err);
+      toast.error(`Error while deleting ${db.name}`)
     })
   }
   const openDatabase = (db: ChessDb) => () => {
@@ -71,18 +69,12 @@ const DbTable: React.FunctionComponent<{
             <button className="button is-ghost" onClick={openDatabase(db)}>{db.name}</button>
           </td>
           <td style={{textAlign: "right"}}>
-            <button className="button is-danger is-outlined is-small" onClick={openDeleteModal(db)}>
-              <span>Delete</span>
-              <span className="icon is-small">
-                <i className="fas fa-times"/>
-              </span>
-            </button>
+            <DeleteButton modalTitle="Delete database" onClick={deleteDb(db)}
+                          modalMessage={"Do you really want to delete the database : " + db.name}/>
           </td>
         </tr>
       )}
       </tbody>
-      <ConfirmationModal isOpen={isDeleteModalOpen} onValidate={deleteModalCb} onCancel={() => toggleDeleteModal(false)}
-                         title="Delete database" message={deleteModalMessage} validateText={"Delete"} validateClass={"is-danger"}/>
     </table>
   )
 }

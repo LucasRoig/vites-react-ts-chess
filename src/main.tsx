@@ -9,20 +9,23 @@ import {store} from "./store";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import {Auth0ProviderWithHistory} from "./shared-components/Auth0ProviderWithHistory";
+import ConfirmationModalContextProvider from "./shared-components/confirmation-modal/ConfirmationModalContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk"
-                     redirectUri={window.location.origin} audience="http://nest-chess-api.athomeprod.fr">
-        {/*<Auth0ProviderWithHistory>*/}
-        <HashRouter>
-          <App/>
-          <ToastContainer/>
-        </HashRouter>
-        {/*</Auth0ProviderWithHistory>*/}
-      </Auth0Provider>
-    </Provider>
+    <ConfirmationModalContextProvider>
+      <Provider store={store}>
+        <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk"
+                       redirectUri={window.location.origin} audience="http://nest-chess-api.athomeprod.fr">
+          {/*<Auth0ProviderWithHistory>*/}
+          <HashRouter>
+            <App/>
+            <ToastContainer/>
+          </HashRouter>
+          {/*</Auth0ProviderWithHistory>*/}
+        </Auth0Provider>
+      </Provider>
+    </ConfirmationModalContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )
