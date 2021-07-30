@@ -2,9 +2,7 @@ import ApiService from "./ApiService";
 
 function createChessDb(name: string): Promise<ChessDb> {
   return ApiService.post<ChessDb>("/db", {
-    db: {
-      name
-    }
+    name
   })
 }
 
@@ -16,12 +14,12 @@ function deleteChessDb(db: ChessDb): Promise<void> {
   return ApiService.del<void>(`/db/${db.id}`)
 }
 
-function getDbDetails(id: number): Promise<ChessDbDetails> {
+function getDbDetails(id: string): Promise<ChessDbDetails> {
   return ApiService.get<ChessDbDetails>(`/db/${id}`)
 }
 
-function getGameFromDb(gameId: number, dbId: number): Promise<GameHeader | undefined> {
-  return getDbDetails(dbId).then(details => details.games.find(g => g.id == gameId))
+function getGameFromDb(gameId: string, dbId: string): Promise<GameHeader | undefined> {
+  return getDbDetails(dbId).then(details => details.games.find(g => g.id === gameId))
 }
 
 function createGame(
@@ -55,7 +53,7 @@ export default {
 
 export interface ChessDb {
   name: string,
-  id: number
+  id: string
 }
 
 export interface ChessDbDetails {
@@ -64,9 +62,9 @@ export interface ChessDbDetails {
 }
 
 export interface GameHeader {
-  id: number,
-  chessDbId: number,
-  userId: number,
+  id: string,
+  chessDbId: string,
+  userId: string,
   white: string,
   black: string,
   event: string,

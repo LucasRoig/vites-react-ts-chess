@@ -2,14 +2,14 @@ import React, {useEffect, useState} from "react";
 import {RouteComponentProps} from "react-router-dom";
 import ChessDbService, {ChessDbDetails, GameHeader} from "../@core/ChessDbService";
 import {useAppDispatch} from "../store";
-import {OpenGameFromDbAction, OpenTabAction} from "../store/tabs/actions";
+import {OpenGameFromDbAction} from "../store/tabs/actions";
 
 interface DatabaseDetailsProps extends RouteComponentProps<{id: string}> {
 
 }
 
 const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
-  const databaseId = parseInt(props.match.params.id)
+  const databaseId = props.match.params.id
   const [databaseDetails, setDatabaseDetails] = useState<ChessDbDetails>()
   useEffect(() => {
     ChessDbService.getDbDetails(databaseId).then(setDatabaseDetails)

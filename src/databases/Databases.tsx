@@ -12,7 +12,9 @@ import {Modal} from "../shared-components/Modal";
 const Databases: React.FunctionComponent = () => {
   const [dbs, setDbs] = useState<ChessDb[]>([])
   useEffect(() => {
-    ChessDbService.fetchChessDb().then(res => setDbs(res))
+    ChessDbService.fetchChessDb().then(res => setDbs(res)).catch(() => {
+      toast.error("cannot fetch databases")
+    })
   }, [])
   const addDb = (db: ChessDb) => {
     const newDbs = [...dbs, db]
@@ -105,6 +107,10 @@ const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void
       setCreateButtonEnabled(false)
       dispatch(OpenTabAction({name: res.name, path: `/databases/${res.id}`}))
       onDbCreated(res)
+    }).catch(() => {
+      setCreateDbLoading(false)
+      setCreateButtonEnabled(true)
+      toast.error("cannot create database")
     })
   }
   return (

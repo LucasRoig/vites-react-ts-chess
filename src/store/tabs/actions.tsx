@@ -83,7 +83,7 @@ export const OpenNewTempGameAction = (): TabActionType => {
   })
 }
 
-export const OpenGameFromDbAction = (gameId: number, dbId: number, white:string, black: string): TabActionType => {
+export const OpenGameFromDbAction = (gameId: string, dbId: string, white:string, black: string): TabActionType => {
   return OpenTabAction({
     name: `${white}${black ? " - " + black : ""}`,
     path: `/databases/${dbId}/games/${gameId}`

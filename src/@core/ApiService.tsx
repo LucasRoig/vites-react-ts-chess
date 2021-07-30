@@ -1,4 +1,4 @@
-const BASE_PATH = "http://localhost:8000/api/v1"
+const BASE_PATH = "/api/v1"
 let authToken = ""
 
 function getHeaders(): Headers {
@@ -6,6 +6,7 @@ function getHeaders(): Headers {
   if (authToken.length) {
     headers.append("Authorization", "Bearer " + authToken)
   }
+  headers.append("Content-Type", "application/json")
   return headers
 }
 
