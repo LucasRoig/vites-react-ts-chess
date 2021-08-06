@@ -10,50 +10,56 @@ import {HorizontalInput} from "../shared-components/inputs/HorizontalInput";
 import {Modal} from "../shared-components/Modal";
 import {useConfirmationModalContext} from "../shared-components/confirmation-modal/ConfirmationModalContext";
 import {DeleteButton} from "../shared-components/buttons/DeleteButton";
+import {useCollection} from "../shared-components/UseCollection";
 
 const Databases: React.FunctionComponent = () => {
-  const [dbs, setDbs] = useState<ChessDb[]>([])
+  const databases = useCollection<ChessDb>([])
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
-    ChessDbService.fetchChessDb().then(res => setDbs(res)).catch(() => {
+    ChessDbService.fetchChessDb().then(res => databases.set(res)).catch(() => {
       toast.error("cannot fetch databases")
     })
   }, [])
 
-  const addDb = (db: ChessDb) => {
-    const newDbs = [...dbs, db]
-    setDbs(newDbs)
+  const deleteDb = (db: ChessDb) =>  {
+    ChessDbService.deleteChessDb(db).then(() => {
+      toast.success(`Database ${db.name} deleted`)
+      databases.remove(db)
+    }).catch(err => {
+      console.error(err);
+      toast.error(`Error while deleting ${db.name}`)
+    })
   }
 
-  const removeDb = (db: ChessDb) => {
-    const newDbs = dbs.filter(d => d !== db)
-    setDbs(newDbs)
+  const openDatabase = (db: ChessDb) => {
+    dispatch(OpenTabAction({name: db.name, path: `/databases/${db.id}`}))
+  }
+
+  const createDb = async (name: string) => {
+    try {
+      const db = await ChessDbService.createChessDb(name);
+      databases.add(db)
+      openDatabase(db)
+    } catch (e: unknown) {
+      toast.error("Error while creating database")
+    }
   }
 
   return (
     <div style={{margin: "1em"}}>
-      <CreateDbForm onDbCreated={addDb}/>
-      <DbTable dbs={dbs} onDbDeleted={removeDb}/>
+      <CreateDbForm createDb={createDb}/>
+      <DbTable dbs={databases.value} deleteDb={deleteDb} openDb={openDatabase}/>
     </div>
   )
 }
 
 const DbTable: React.FunctionComponent<{
   dbs: ChessDb[],
-  onDbDeleted: (db: ChessDb) => void
-}> = ({dbs, onDbDeleted}) => {
-  const dispatch = useAppDispatch()
-  const deleteDb = (db: ChessDb) => () => {
-    ChessDbService.deleteChessDb(db).then(() => {
-      toast.success(`Database ${db.name} deleted`)
-      onDbDeleted(db)
-    }).catch(err => {
-      console.error(err);
-      toast.error(`Error while deleting ${db.name}`)
-    })
-  }
-  const openDatabase = (db: ChessDb) => () => {
-    dispatch(OpenTabAction({name: db.name, path: `/databases/${db.id}`}))
-  }
+  deleteDb: (db: ChessDb) => void,
+  openDb: (db: ChessDb) => void
+}> = ({dbs, deleteDb, openDb}) => {
+
   return (
     <table className="table" style={{width: "100%"}}>
       <thead>
@@ -66,10 +72,10 @@ const DbTable: React.FunctionComponent<{
       {dbs.map(db =>
         <tr key={db.id}>
           <td style={{verticalAlign: "middle"}} >
-            <button className="button is-ghost" onClick={openDatabase(db)}>{db.name}</button>
+            <button className="button is-ghost" onClick={openDb.bind(null, db)}>{db.name}</button>
           </td>
           <td style={{textAlign: "right"}}>
-            <DeleteButton modalTitle="Delete database" onClick={deleteDb(db)}
+            <DeleteButton modalTitle="Delete database" onClick={deleteDb.bind(null, db)}
                           modalMessage={"Do you really want to delete the database : " + db.name}/>
           </td>
         </tr>
@@ -77,34 +83,28 @@ const DbTable: React.FunctionComponent<{
       </tbody>
     </table>
   )
+
 }
 
 
-const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void }> = ({onDbCreated}) => {
-  const dispatch = useAppDispatch()
+const CreateDbForm: React.FunctionComponent<{ createDb: (dbName: string) => void }> = ({createDb}) => {
   const [inputDbName, setInputDbName] = useState("")
   const [createButtonEnabled, setCreateButtonEnabled] = useState(false)
   const [isCreateDbLoading, setCreateDbLoading] = useState(false)
+
   const onInputDbNameChanged = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setCreateButtonEnabled(newValue.length > 0)
     setInputDbName(newValue)
   }
-  const postCreateDb = () => {
-    const name = inputDbName
+
+  const handleCreate = async () => {
     setCreateDbLoading(true)
-    ChessDbService.createChessDb(name).then((res) => {
-      setCreateDbLoading(false)
-      setInputDbName("")
-      setCreateButtonEnabled(false)
-      dispatch(OpenTabAction({name: res.name, path: `/databases/${res.id}`}))
-      onDbCreated(res)
-    }).catch(() => {
-      setCreateDbLoading(false)
-      setCreateButtonEnabled(true)
-      toast.error("cannot create database")
-    })
+    await createDb(inputDbName)
+    setCreateDbLoading(false)
+    setInputDbName("")
   }
+
   return (
     <div className="field is-grouped">
       <p className="control">
@@ -113,7 +113,7 @@ const CreateDbForm: React.FunctionComponent<{ onDbCreated: (db: ChessDb) => void
       </p>
       <p className="control">
         <button className={`button is-primary ${isCreateDbLoading ? "is-loading" : ""}`}
-                disabled={!createButtonEnabled} onClick={postCreateDb}>Create
+                disabled={!createButtonEnabled} onClick={handleCreate}>Create
         </button>
       </p>
     </div>
