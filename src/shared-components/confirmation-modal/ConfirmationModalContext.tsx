@@ -1,7 +1,6 @@
 import React, {useContext, useRef, useState} from "react";
-import useModal from "../UseModal";
 import {ConfirmationModal, ConfirmationModalProps} from "./ConfirmationModal";
-import {useHistory, useLocation} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 export type ConfirmationModalCustomizableProps = Partial<Omit<ConfirmationModalProps, "onValidate" | "onCancel" | "isOpen">>
 

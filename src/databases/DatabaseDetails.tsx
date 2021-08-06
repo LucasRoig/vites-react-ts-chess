@@ -11,6 +11,7 @@ interface DatabaseDetailsProps extends RouteComponentProps<{id: string}> {
 }
 
 const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
+  const dispatch = useAppDispatch();
   const databaseId = props.match.params.id
   const [databaseDetails, setDatabaseDetails] = useState<ChessDbDetails>()
 
@@ -19,37 +20,35 @@ const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
   }, [])
 
   const removeGame = (game: GameHeader) => {
-    if (databaseDetails) {
-      const newGames = databaseDetails?.games.filter(g => g !== game)
-      setDatabaseDetails({...databaseDetails, games: newGames})
-    }
-  }
-
-  return databaseDetails ? (
-    <div style={{margin: "1em"}}>
-      <h1 className="title">Database : {databaseDetails.database.name}</h1>
-      <GameTable games={databaseDetails.games} onGameDeleted={removeGame}/>
-    </div>
-  ) : (
-    <div>Loading...</div>
-  )
-}
-
-const GameTable: React.FC<{games: GameHeader[], onGameDeleted: (g: GameHeader) => void }> = ({games, onGameDeleted}) => {
-  const dispatch = useAppDispatch();
-  const deleteGame = (game: GameHeader) => () => {
     ChessDbService.deleteGame(game).then(() => {
       toast.success(`Game deleted`)
-      onGameDeleted(game)
+      if (databaseDetails) {
+        const newGames = databaseDetails?.games.filter(g => g !== game)
+        setDatabaseDetails({...databaseDetails, games: newGames})
+      }
     }).catch(err => {
       console.error(err)
       toast.error('Error while deleting game')
     })
   }
 
-  const openGame = (game: GameHeader) => () => {
+  const openGame = (game: GameHeader) => {
     dispatch(OpenGameFromDbAction(game.id, game.db, game.white, game.black))
   }
+
+  return databaseDetails ? (
+    <div style={{margin: "1em"}}>
+      <h1 className="title">Database : {databaseDetails.database.name}</h1>
+      <GameTable games={databaseDetails.games} deleteGame={removeGame} openGame={openGame}/>
+    </div>
+  ) : (
+    <div>Loading...</div>
+  )
+}
+
+const GameTable: React.FC<
+  {games: GameHeader[], deleteGame: (g: GameHeader) => void, openGame: (g: GameHeader) => void }
+  > = ({games, deleteGame, openGame}) => {
 
   return(
     <table className="table" style={{width: "100%"}}>
@@ -66,13 +65,13 @@ const GameTable: React.FC<{games: GameHeader[], onGameDeleted: (g: GameHeader) =
       <tbody>
       { games.map(game =>
         <tr key={game.id}>
-          <td><button className="button is-ghost" onClick={openGame(game)}>{game.white}</button></td>
+          <td><button className="button is-ghost" onClick={openGame.bind(null,game)}>{game.white}</button></td>
           <td style={{verticalAlign: "middle"}}>{game.black}</td>
           <td style={{verticalAlign: "middle"}}>{game.result}</td>
           <td style={{verticalAlign: "middle"}}>{game.event}</td>
           <td style={{verticalAlign: "middle"}}>{game.date}</td>
           <td style={{textAlign: "right"}}>
-            <DeleteButton onClick={deleteGame(game)} modalTitle="Delete Game"
+            <DeleteButton onClick={deleteGame.bind(null, game)} modalTitle="Delete Game"
                           modalMessage={`Do you really want to delete the game : ${game.white} - ${game.black}`}/>
           </td>
         </tr>
