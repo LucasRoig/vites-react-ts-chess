@@ -1,6 +1,7 @@
 import React, {useContext, useRef, useState} from "react";
 import useModal from "../UseModal";
 import {ConfirmationModal, ConfirmationModalProps} from "./ConfirmationModal";
+import {useHistory, useLocation} from "react-router-dom";
 
 export type ConfirmationModalCustomizableProps = Partial<Omit<ConfirmationModalProps, "onValidate" | "onCancel" | "isOpen">>
 
@@ -9,21 +10,29 @@ const ConfirmationModalContext = React.createContext<{showConfirmation: (conf: C
 })
 
 const ConfirmationModalContextProvider: React.FC = ({children}) => {
-  const [isShowing, toggle] = useModal()
+  const history = useHistory();
+  const [isShowing, toggle] = useState(false)
   const resolver = useRef<(v: boolean) => void>()
   const [modalConf, setModalConf] = useState<ConfirmationModalCustomizableProps>({})
+  const unlisten = useRef<() => void>()
 
   const handleShow = (conf:ConfirmationModalCustomizableProps): Promise<boolean> => {
+    unlisten.current = history.listen(location => {
+      handleClick(false)()
+    })
     setModalConf(conf)
-    toggle();
+    toggle(true);
     return new Promise(resolve => resolver.current = resolve)
   }
 
   const handleClick = (res: boolean) => () => {
+    if (unlisten.current) {
+      unlisten.current()
+    }
     if (resolver.current) {
       resolver.current(res)
     }
-    toggle()
+    toggle(false)
   }
 
   return(

@@ -13,19 +13,19 @@ import ConfirmationModalContextProvider from "./shared-components/confirmation-m
 
 ReactDOM.render(
   <React.StrictMode>
-    <ConfirmationModalContextProvider>
       <Provider store={store}>
         <Auth0Provider domain="dev-5t4zeimz.eu.auth0.com" clientId="2NDmidAn4IWQgsLYqXVy3R8LcMFyPIDk"
                        redirectUri={window.location.origin} audience="http://nest-chess-api.athomeprod.fr">
           {/*<Auth0ProviderWithHistory>*/}
           <HashRouter>
-            <App/>
-            <ToastContainer/>
+            <ConfirmationModalContextProvider>
+              <App/>
+              <ToastContainer/>
+            </ConfirmationModalContextProvider>
           </HashRouter>
           {/*</Auth0ProviderWithHistory>*/}
         </Auth0Provider>
       </Provider>
-    </ConfirmationModalContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )
