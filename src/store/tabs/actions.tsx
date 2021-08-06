@@ -42,7 +42,10 @@ export function CloseTabAction(tab: Tab): CloseTabActionType {
     const id = parseInt(match[1])
     TempGamesService.closeGame(id)
   }
-  match = tab.path.match(/\/databases\/(\d+)\/games\/(\d+)/)
+
+  match = tab.path.match(/\/databases\/(\w+)\/games\/(\w+)/)
+
+  console.log(tab.path, match)
   if (match) {
     const dbId = match[1]
     const gameId = match[2]
@@ -67,6 +70,7 @@ interface LoadTabsActionType {
 //     type: LOAD_TABS_ACTION,
 //     payload: response
 //   })
+
 export const LoadTabsAction =  (): LoadTabsActionType => {
   const response = TabsService.fetchTabs()
   return {
