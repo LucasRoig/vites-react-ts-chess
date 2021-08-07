@@ -83,7 +83,6 @@ function getTemporaryGame(id: number): TemporaryGame | undefined {
 }
 
 function getTempGameFromDatabase(gameId: string, dbId: string): Promise<TemporaryGame | undefined> {
-  console.log("open from db")
   const find = getLocalStorage().find(g => g.saveData && g.saveData.dbId == dbId && g.saveData.gameId == gameId);
   if (find) {
     return new Promise<TemporaryGame>(resolve => resolve({

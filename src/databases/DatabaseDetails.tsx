@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {RouteComponentProps} from "react-router-dom";
-import ChessDbService, {ChessDb, ChessDbDetails, GameHeader} from "../@core/ChessDbService";
+import ChessDbService, {ChessDbDetails, GameHeader} from "../@core/ChessDbService";
 import {useAppDispatch} from "../store";
 import {OpenGameFromDbAction} from "../store/tabs/actions";
 import {toast} from "react-toastify";
 import {DeleteButton} from "../shared-components/buttons/DeleteButton";
+import {gameToString, getHeader, HeadersKeys} from "../libraries/chess/Game";
 
 interface DatabaseDetailsProps extends RouteComponentProps<{id: string}> {
 
@@ -33,7 +34,7 @@ const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
   }
 
   const openGame = (game: GameHeader) => {
-    dispatch(OpenGameFromDbAction(game.id, game.db, game.white, game.black))
+    dispatch(OpenGameFromDbAction(game.id, game.db, getHeader(game.headers, HeadersKeys.White), getHeader(game.headers, HeadersKeys.Black)))
   }
 
   return databaseDetails ? (
@@ -65,14 +66,14 @@ const GameTable: React.FC<
       <tbody>
       { games.map(game =>
         <tr key={game.id}>
-          <td><button className="button is-ghost" onClick={openGame.bind(null,game)}>{game.white}</button></td>
-          <td style={{verticalAlign: "middle"}}>{game.black}</td>
-          <td style={{verticalAlign: "middle"}}>{game.result}</td>
-          <td style={{verticalAlign: "middle"}}>{game.event}</td>
-          <td style={{verticalAlign: "middle"}}>{game.date}</td>
+          <td><button className="button is-ghost" onClick={openGame.bind(null,game)}>{getHeader(game.headers, HeadersKeys.White)}</button></td>
+          <td style={{verticalAlign: "middle"}}>{getHeader(game.headers, HeadersKeys.Black)}</td>
+          <td style={{verticalAlign: "middle"}}>{getHeader(game.headers, HeadersKeys.Result)}</td>
+          <td style={{verticalAlign: "middle"}}>{getHeader(game.headers, HeadersKeys.Event)}</td>
+          <td style={{verticalAlign: "middle"}}>{getHeader(game.headers, HeadersKeys.Date)}</td>
           <td style={{textAlign: "right"}}>
             <DeleteButton onClick={deleteGame.bind(null, game)} modalTitle="Delete Game"
-                          modalMessage={`Do you really want to delete the game : ${game.white} - ${game.black}`}/>
+                          modalMessage={`Do you really want to delete the game : ${gameToString(game.headers)}`}/>
           </td>
         </tr>
       )}

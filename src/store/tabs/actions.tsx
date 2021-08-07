@@ -45,7 +45,6 @@ export function CloseTabAction(tab: Tab): CloseTabActionType {
 
   match = tab.path.match(/\/databases\/(\w+)\/games\/(\w+)/)
 
-  console.log(tab.path, match)
   if (match) {
     const dbId = match[1]
     const gameId = match[2]

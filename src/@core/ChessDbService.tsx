@@ -1,5 +1,5 @@
 import ApiService from "./ApiService";
-import {Game, serializableGameToGame} from "../libraries/chess";
+import {Game, serializableGameToGame, Headers} from "../libraries/chess";
 import {SerializableGame} from "../libraries/chess/Game";
 
 function createChessDb(name: string): Promise<ChessDb> {
@@ -27,13 +27,6 @@ function getGameFromDb(gameId: string, dbId: string): Promise<GameHeader | undef
 function getGame(gameId: string): Promise<Game | void> {
   return ApiService.get<SerializableGame & {white: string, black: string, date: string, event: string, result: string}>(`/games/${gameId}`)
     .then(g => {
-      g.headers = {
-        "white": g.white,
-        "black": g.black,
-        "date": g.date,
-        "event": g.event,
-        "result": g.result
-      }
       return serializableGameToGame(g)
   })
 }
@@ -41,21 +34,9 @@ function getGame(gameId: string): Promise<Game | void> {
 function createGame(
   {
     dbId,
-    white,
-    black,
-    date,
-    event,
-    result,
-    ...rest
-  }: { dbId: string, white: string, black: string, date: string, event: string, result: string, [key: string]: unknown }): Promise<GameHeader> {
-  return ApiService.post<GameHeader>(`/db/${dbId}/games`, {
-    white,
-    black,
-    date,
-    event,
-    result,
-    ...rest
-  })
+    game
+  }: { dbId: string, game: SerializableGame }): Promise<GameHeader> {
+  return ApiService.post<GameHeader>(`/db/${dbId}/games`, game)
 }
 
 function deleteGame(game: GameHeader): Promise<void> {
@@ -92,9 +73,5 @@ export interface GameHeader {
   id: string,
   db: string,
   userId: string,
-  white: string,
-  black: string,
-  event: string,
-  date: string,
-  result: string
+  headers: Headers
 }

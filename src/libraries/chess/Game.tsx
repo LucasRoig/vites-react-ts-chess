@@ -206,3 +206,34 @@ export function nonCircularGameToGame(game: NonCircularGame): Game {
     firstPosition: newPos
   }
 }
+
+export enum HeadersKeys {
+  Event = "Event",
+  Site = "Site",
+  Date = "Date",
+  Round = "Round",
+  White = "White",
+  Black = "Black",
+  Result = "Result",
+}
+
+export function setHeader(game: Game, key: HeadersKeys, value: string) {
+  game.headers[key] = value
+}
+
+export function getHeader(gameOrHeaders: Game | Headers, key: HeadersKeys): string {
+  if (gameOrHeaders.headers) {
+    return (gameOrHeaders as Game).headers[key] || ""
+  } else {
+    return (gameOrHeaders as Headers)[key] || ""
+  }
+}
+
+export function gameToString(gameOrHeaders: Game | Headers): string {
+  const headers: Headers = (gameOrHeaders as Game).headers || gameOrHeaders as Headers;
+  if (getHeader(headers, HeadersKeys.Black)) {
+    return getHeader(headers, HeadersKeys.White) + " - " + getHeader(headers, HeadersKeys.Black)
+  } else {
+    return getHeader(headers, HeadersKeys.White)
+  }
+}

@@ -1,8 +1,5 @@
-import React, {ChangeEvent, Component, useEffect, useMemo, useState} from 'react';
-import ReactDOM from 'react-dom';
+import React, {useEffect, useMemo, useState} from 'react';
 import ChessDbService, {ChessDb} from "../@core/ChessDbService";
-import {Simulate} from "react-dom/test-utils";
-import contextMenu = Simulate.contextMenu;
 import {toast} from "react-toastify";
 import {useAppDispatch, useAppSelector} from "../store";
 import {CloseTabAction, OpenGameFromDbAction} from "../store/tabs/actions";
@@ -11,9 +8,8 @@ import {Modal} from "./Modal";
 import {HorizontalInput} from "./inputs/HorizontalInput";
 import {HorizontalField} from "./inputs/HorizontalField";
 import {useFormik} from "formik";
-import * as Yup from "yup";
-import usePromise from "./UsePromise";
-import {gameToSerializableGame} from "../libraries/chess/Game";
+import * as Yup from "yup"
+import {gameToSerializableGame, getHeader, HeadersKeys, setHeader} from "../libraries/chess/Game";
 
 interface SaveGameModalProps {
   isOpen: boolean,
@@ -39,6 +35,7 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
           setChessDb(dbs)
         }
       }
+      formik.validateForm()
     }).catch(err => {
       console.error(err)
       toast.error("Cannot fetch databases")
@@ -48,17 +45,22 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
 
   let initialValues = useMemo(() => ({
     database: "",
-      white: game.game.headers["white"] || "",
-      black: game.game.headers["black"] || "",
-      result: game.game.headers["result"] || "*",
-      event: game.game.headers["event"] || "",
-      date: game.game.headers["date"] || (new Date()).toISOString().substr(0, 10)
-  }), []);
+      white: getHeader(game.game, HeadersKeys.White),
+      black: getHeader(game.game, HeadersKeys.Black),
+      result: getHeader(game.game, HeadersKeys.Result).length ? getHeader(game.game, HeadersKeys.Result) : "*",
+      event: getHeader(game.game, HeadersKeys.Event),
+      date: getHeader(game.game, HeadersKeys.Date).length ? getHeader(game.game, HeadersKeys.Date) : (new Date()).toISOString().substr(0, 10)
+  }), [game]);
 
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: ({ white, black, date, event, result, database}) => {
       setIsSubmitting(true)
+      setHeader(game.game, HeadersKeys.White, white)
+      setHeader(game.game, HeadersKeys.Black, black)
+      setHeader(game.game, HeadersKeys.Date, date)
+      setHeader(game.game, HeadersKeys.Event, event)
+      setHeader(game.game, HeadersKeys.Result, result)
       if (game.saveData !== null) {
         const serializableGame = gameToSerializableGame(game.game)
         ChessDbService.updateGame(serializableGame.id, serializableGame).then(() => {
@@ -72,16 +74,14 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
         })
       } else {
         const serializableGame = gameToSerializableGame(game.game)
-        ChessDbService.createGame({
-          dbId: database, white, black, date, event, result, comment: serializableGame.comment, positions: serializableGame.positions
-        }).then(res => {
+        ChessDbService.createGame({ dbId: database, game: serializableGame}).then(res => {
           setIsSubmitting(false)
           hideAndReset()
           toast.success("Successfully saved")
           if (currentTab) {
             dispatch(CloseTabAction(currentTab))
           }
-          dispatch(OpenGameFromDbAction(res.id, res.db, res.white, res.black))
+          dispatch(OpenGameFromDbAction(res.id, res.db, getHeader(res.headers, HeadersKeys.White), getHeader(res.headers, HeadersKeys.Black)))
         }).catch(err => {
           console.log(err)
           setIsSubmitting(false)
@@ -133,7 +133,7 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
 
                   <HorizontalField name="result" label="Result">
                     <div className="select is-fullwidth">
-                      <select value={formik.values.result} onChange={formik.handleChange}>
+                      <select value={formik.values.result} onChange={formik.handleChange} name="result">
                         <option>*</option>
                         <option>1-0</option>
                         <option>0-1</option>
