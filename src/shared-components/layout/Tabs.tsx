@@ -14,7 +14,7 @@ const Tabs : React.FunctionComponent = () => {
     dispatch(CloseTabAction(tab))
   }
   return (
-    <div className="tabs" style={{backgroundColor: 'white', marginBottom: 0}}>
+    <div className="tabs layout__tabs" style={{backgroundColor: 'white', marginBottom: 0}}>
       <ul>
         {state.openedTabs.map(t =>
           <li key={t.path} className={state.selectedTab?.path === t.path ? "is-active" : ""}>

@@ -18,7 +18,7 @@ const Header: React.FunctionComponent<HeaderProps> = () => {
         dispatch(OpenNewDocumentAction())
     }
     return (
-        <header className="header">
+        <header className="header layout__header">
             <nav className="navbar">
                 <div className="navbar-menu">
                     <div className="navbar-start">

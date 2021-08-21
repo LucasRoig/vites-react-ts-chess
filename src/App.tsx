@@ -35,24 +35,24 @@ function App() {
 
     return (
         <>
+            <div className={"layout"}>
             <TabRouterHandler/>
             <Header/>
-            <div className="is-flex">
-                <Sidebar/>
-                <div style={{width: '100%'}}>
-                    <Tabs/>
-                    <Switch>
-                        <Route path="/" exact>
-                            <div>Select a Tab</div>
-                        </Route>
-                        <ProtectedRoute path="/databases" exact component={Databases}/>
-                        <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
-                        <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
-                        <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
-                        <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
-                        <ProtectedRoute path="/documents/:id" exact component={TextEditor}/>
-                    </Switch>
-                </div>
+            <Sidebar/>
+            <Tabs/>
+            <main className={"layout__main"}>
+                <Switch>
+                    <Route path="/" exact>
+                        <div>Select a Tab</div>
+                    </Route>
+                    <ProtectedRoute path="/databases" exact component={Databases}/>
+                    <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
+                    <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
+                    <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
+                    <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
+                    <ProtectedRoute path="/documents/:id" exact component={TextEditor}/>
+                </Switch>
+            </main>
             </div>
         </>
     )

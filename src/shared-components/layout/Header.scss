@@ -3,7 +3,9 @@
   z-index: 1;
   box-shadow: 0 0.5rem 1rem 0 rgb(44 51 73 / 10%);
 }
-
+.header > .navbar {
+  width: 100%;
+}
 .user-icon {
   margin-right: 2.5em;
 }

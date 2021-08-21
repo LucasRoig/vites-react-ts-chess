@@ -12,7 +12,7 @@ const Sidebar: React.FunctionComponent<SidebarProps> = () => {
         dispatch(OpenTabAction({name, path}))
     }
     return (
-        <aside className="sidebar">
+        <aside className="sidebar layout__nav">
             <nav className="menu">
                 <p className="menu-label">
                     General

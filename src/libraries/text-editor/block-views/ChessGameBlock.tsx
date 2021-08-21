@@ -50,11 +50,13 @@ class ChessGameBlock extends React.Component<ChessGameBlockProps, ChessGameBlock
 
   render() {
     return (
+      <div style={{paddingTop: "2em", paddingBottom: "2em"}}>
       <div style={{display: "flex", border: "1px solid #B5B5B5", paddingBottom: ".75rem"}}>
         <ChessBoardWithRules fen={this.state.currentPos.fen} onMove={this.onMove}/>
         <div style={{backgroundColor: "white", width: "300px", marginLeft: "1rem"}}>
           <NotationPanel game={this.state.game} currentPositionIndex={this.state.currentPos.index} onPosClick={this.goToPosition}/>
         </div>
+      </div>
       </div>
     );
   }
