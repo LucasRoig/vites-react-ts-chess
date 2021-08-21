@@ -5,6 +5,7 @@ import {ChessBoardWithRules} from "../../../shared-components/chessboard/Chessbo
 import {NotationPanel} from "../../../shared-components/notation-panel/NotationPanel";
 import {GameController} from "../../chess/GameController";
 import {ChessGameBlockModel} from "../Models";
+import {TextEditorContext} from "../TextEditorContext";
 
 interface ChessGameBlockProps {
   block: ChessGameBlockModel
@@ -16,7 +17,8 @@ interface ChessGameBlockState {
 }
 
 class ChessGameBlock extends React.Component<ChessGameBlockProps, ChessGameBlockState> {
-
+  static contextType = TextEditorContext
+  context!: React.ContextType<typeof TextEditorContext>
   constructor(props: ChessGameBlockProps) {
     super(props);
     console.log(this.props.block.game)
@@ -30,6 +32,10 @@ class ChessGameBlock extends React.Component<ChessGameBlockProps, ChessGameBlock
     const {gameHasChanged, posToGo} = GameController.handleMove(this.state.game, this.state.currentPos, from, to, san, fen)
     this.setState({
       currentPos: posToGo
+    }, () => {
+      if (gameHasChanged) {
+        this.context.saveDocument()
+      }
     })
   }
 

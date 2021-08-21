@@ -17,7 +17,8 @@ export const TextEditorContext = React.createContext<{
   turnBlockInto: (blockId: string, newType: BlockTypeNames) => void,
   setTempDoc: (doc: TempDocument) => void,
   setTitle: (title: string) => void,
-  titleBlockId: string
+  titleBlockId: string,
+  saveDocument: () => void,
 }>({
   document: newDocument(),
   setBlockContent: () => {},
@@ -32,7 +33,8 @@ export const TextEditorContext = React.createContext<{
   setTempDoc: () => {},
   insertBlockAfter: () => {},
   setTitle: (title: string) => {},
-  titleBlockId: "title"
+  titleBlockId: "title",
+  saveDocument: () => {}
 })
 
 class TextEditorContextProvider extends React.Component<{}, {
@@ -56,7 +58,7 @@ class TextEditorContextProvider extends React.Component<{}, {
         ...this.state.document,
         title: title
       }
-    })
+    }, this.saveDocument)
   }
 
   setTempDoc = (doc: TempDocument) => {
@@ -75,9 +77,11 @@ class TextEditorContextProvider extends React.Component<{}, {
         ...document,
         blocks: newData
       }
-    }, () => {
-      DocumentService.updateTempDocument(this.state.tempId, this.state.document)
-    })
+    }, this.saveDocument)
+  }
+
+  saveDocument = () => {
+    DocumentService.updateTempDocument(this.state.tempId, this.state.document)
   }
 
   insertNewBlockAfter = (blockId: string) => {
@@ -97,7 +101,7 @@ class TextEditorContextProvider extends React.Component<{}, {
           blocks: newTab
         },
         focusedBlock: nBlock.id
-      })
+      }, this.saveDocument)
     }
   }
 
@@ -144,7 +148,7 @@ class TextEditorContextProvider extends React.Component<{}, {
           blocks: newBlocks
         },
         focusedBlock: document.blocks[Math.max(0, index - 1)].id
-      })
+      }, this.saveDocument)
     }
   }
 
@@ -169,7 +173,7 @@ class TextEditorContextProvider extends React.Component<{}, {
             blocks: newBlocks
           },
           focusedBlock: block.id
-        })
+        }, this.saveDocument)
       }
     }
   }
@@ -190,7 +194,8 @@ class TextEditorContextProvider extends React.Component<{}, {
             turnBlockInto: this.turnBlockInto,
             setTempDoc: this.setTempDoc,
             setTitle: this.setTitle,
-            titleBlockId: this.titleBlockId
+            titleBlockId: this.titleBlockId,
+            saveDocument: this.saveDocument
           }}>
             {this.props.children}
           </TextEditorContext.Provider>
