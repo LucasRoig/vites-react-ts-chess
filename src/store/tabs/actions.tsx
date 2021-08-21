@@ -1,6 +1,7 @@
 import {Tab} from "./TabsReducer";
 import TabsService from "../../@core/TabsService";
 import TempGamesService from "../../@core/TempGamesService"
+import {DocumentService} from "../../libraries/text-editor/DocumentService";
 
 const CLICK_TAB_ACTION = "CLICK_TAB_ACTION"
 const OPEN_TAB_ACTION = "OPEN_TAB_ACTION"
@@ -50,6 +51,12 @@ export function CloseTabAction(tab: Tab): CloseTabActionType {
     const gameId = match[2]
     TempGamesService.closeGameFromDb(gameId, dbId)
   }
+
+  match = tab.path.match(/\/documents\/(.+)/)
+  if (match) {
+    const id = match[1]
+    DocumentService.closeTempDocument(id)
+  }
   TabsService.closeTab(tab)
   return {
     type: CLOSE_TAB_ACTION,
@@ -83,6 +90,14 @@ export const OpenNewTempGameAction = (): TabActionType => {
   return OpenTabAction({
     name: "New Game",
     path: "/tempGames/" + temporaryGame.temporaryId
+  })
+}
+
+export const OpenNewDocumentAction = (): TabActionType => {
+  const doc = DocumentService.createTempDocument();
+  return OpenTabAction({
+    name: "New Document",
+    path: "/documents/" + doc.tempId
   })
 }
 

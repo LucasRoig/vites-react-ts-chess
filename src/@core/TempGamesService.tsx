@@ -1,5 +1,5 @@
 import {Game, serializableGameToGame} from "../libraries/chess";
-import {FirstPosition, gameToSerializableGame, SerializableGame} from "../libraries/chess/Game";
+import {FirstPosition, gameToSerializableGame, newGame, SerializableGame} from "../libraries/chess/Game";
 import ChessDbService from "./ChessDbService";
 
 interface TemporaryGame {
@@ -21,21 +21,6 @@ interface SerializableTempGame {
 }
 
 const localStorageKey = "temporaryGames"
-
-function newGame(): Game {
-  const firstPosition: FirstPosition = {
-    index: 0,
-    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-    variations: [],
-    nags: []
-  }
-  const game: Game = {
-    id: "",
-    firstPosition: firstPosition,
-    headers: {}
-  }
-  return game
-}
 
 function getLocalStorage(): SerializableTempGame[] {
   const str = localStorage.getItem(localStorageKey);

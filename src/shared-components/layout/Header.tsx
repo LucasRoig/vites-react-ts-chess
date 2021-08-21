@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import "./Header.scss"
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "../../store";
-import {OpenNewTempGameAction, OpenTabAction} from "../../store/tabs/actions";
+import {OpenNewDocumentAction, OpenNewTempGameAction, OpenTabAction} from "../../store/tabs/actions";
 
 interface HeaderProps {
 
@@ -14,6 +14,9 @@ const Header: React.FunctionComponent<HeaderProps> = () => {
     function newGame() {
         dispatch(OpenNewTempGameAction())
     }
+    function newText() {
+        dispatch(OpenNewDocumentAction())
+    }
     return (
         <header className="header">
             <nav className="navbar">
@@ -21,6 +24,7 @@ const Header: React.FunctionComponent<HeaderProps> = () => {
                     <div className="navbar-start">
                         <div className="navbar-item">
                             <button className="button is-light" onClick={newGame}>New Game</button>
+                            <button className="button is-light" onClick={newText}>New Text</button>
                         </div>
                     </div>
                     {isAuthenticated ? <RightSideAuthenticated/> : <RightSideNotAuthenticated/>}

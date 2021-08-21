@@ -15,6 +15,7 @@ import ApiService from "./@core/ApiService";
 import TempGameView from "./tempGames/TempGameView";
 import {DatabaseDetails} from "./databases/DatabaseDetails";
 import {TabRouterHandler} from "./TabRouterHandler";
+import TextEditor from "./libraries/text-editor/TextEditor";
 
 function App() {
     const dispatch = useAppDispatch()
@@ -49,6 +50,7 @@ function App() {
                         <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
                         <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
                         <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
+                        <ProtectedRoute path="/documents/:id" exact component={TextEditor}/>
                     </Switch>
                 </div>
             </div>

@@ -8,6 +8,7 @@ import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
 import SaveGameModal from "../shared-components/SaveGameModal";
 import useModal from "../shared-components/UseModal";
 import {toast} from "react-toastify";
+import {GameController} from "../libraries/chess/GameController";
 
 
 interface TempGameViewProps extends RouteComponentProps<{id: string, dbId?: string}> {
@@ -45,32 +46,9 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
 
   function onMove(from: Square, to: Square, san: string, fen: string) {
     if (currentPos && currentGame) {
-      const find = currentPos.variations.find(v => v.fen === fen);
-      if (find) {
-        setCurrentPos(find)
-      } else {
-        function maxIndex(p: FirstPosition): number {
-          if (p.variations.length === 0) {
-            return p.index
-          } else {
-            return Math.max(...p.variations.map(maxIndex), -1)
-          }
-        }
-        const pos: Position = {
-          index: maxIndex(currentGame.game.firstPosition) + 1,
-          fen: fen,
-          move: {from, to},
-          variations: [],
-          nags: [],
-          san: san,
-          comment: "",
-          parent: currentPos,
-          commentBefore: ""
-        }
-
-        currentPos.variations.push(pos)
-
-        setCurrentPos(pos)
+      const {gameHasChanged, posToGo} = GameController.handleMove(currentGame.game, currentPos, from, to, san, fen);
+      setCurrentPos(posToGo)
+      if (gameHasChanged) {
         TempGamesService.updateTemporaryGame(currentGame)
       }
     }
@@ -89,32 +67,8 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
   }
 
   function goToPosition(position: Position) {
-    if (currentGame && currentPos) {
-      function findPos(p: Position): Position | undefined {
-        if (p.index === position.index) {
-          return p
-        } else {
-          for (let p2 of p.variations) {
-            let res = findPos(p2)
-            if (res) {
-              return res
-            }
-          }
-        }
-        return undefined
-      }
-      let pos: FirstPosition | undefined = undefined
-      if (currentGame.game.firstPosition.index === position.index) {
-        pos = currentGame.game.firstPosition
-      } else {
-        for (let p2 of currentGame.game.firstPosition.variations) {
-          let res = findPos(p2)
-          if (res) {
-            pos = res
-            break
-          }
-        }
-      }
+    if (currentGame) {
+      const pos = GameController.getPosition(currentGame.game, position)
       if (pos) {
         setCurrentPos(pos)
       }

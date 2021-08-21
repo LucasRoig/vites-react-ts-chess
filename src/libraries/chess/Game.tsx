@@ -237,3 +237,18 @@ export function gameToString(gameOrHeaders: Game | Headers): string {
     return getHeader(headers, HeadersKeys.White)
   }
 }
+
+export function newGame(): Game {
+  const firstPosition: FirstPosition = {
+    index: 0,
+    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    variations: [],
+    nags: []
+  }
+  const game: Game = {
+    id: "",
+    firstPosition: firstPosition,
+    headers: {}
+  }
+  return game
+}

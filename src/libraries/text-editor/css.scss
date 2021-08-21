@@ -1,0 +1,31 @@
+.text-container[contenteditable]:focus:empty:before,
+:not(.text-container)[contenteditable]:empty:before{
+  content: attr(placeholder);
+  cursor: text;
+}
+
+
+*:focus {
+  outline: none;
+}
+
+[contenteditable] {
+  //line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.btn-container-left-block {
+  visibility: hidden;
+  min-width: 88px;
+
+}
+
+:hover>.btn-container-left-block {
+  visibility: visible;
+}
+
+.block {
+  margin-bottom: 0 !important;
+  margin-left: -78px !important;
+}
