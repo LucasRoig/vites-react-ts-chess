@@ -47,7 +47,7 @@ const Databases: React.FunctionComponent = () => {
   }
 
   return (
-    <div style={{margin: "1em"}}>
+    <div>
       <CreateDbForm createDb={createDb}/>
       <DbTable dbs={databases.value} deleteDb={deleteDb} openDb={openDatabase}/>
     </div>

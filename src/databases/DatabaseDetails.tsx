@@ -51,7 +51,7 @@ const DatabaseDetails: React.FC<DatabaseDetailsProps> = (props) => {
   }
 
   return databaseDetails ? (
-    <div style={{margin: "1em"}}>
+    <div>
       <h1 className="title">Database : {databaseDetails.database.name}</h1>
       <GameTable games={databaseDetails.games} deleteGame={removeGame} openGame={openGame} documents={databaseDetails.documents} openDocument={openDocument} deleteDocument={deleteDocument}/>
     </div>
