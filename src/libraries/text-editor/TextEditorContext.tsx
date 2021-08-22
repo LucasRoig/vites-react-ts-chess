@@ -1,7 +1,7 @@
 import React, {useContext,} from "react";
 import {BlockTypeNames} from "./Models";
 import {BlocksController, Document, newDocument} from "./BlocksController";
-import {DocumentService, TempDocument} from "./DocumentService";
+import {DocumentSaveData, DocumentService, TempDocument} from "./DocumentService";
 
 export const TextEditorContext = React.createContext<{
   document: Document,
@@ -19,6 +19,7 @@ export const TextEditorContext = React.createContext<{
   setTitle: (title: string) => void,
   titleBlockId: string,
   saveDocument: () => void,
+  documentSaveData: DocumentSaveData,
 }>({
   document: newDocument(),
   setBlockContent: () => {},
@@ -34,13 +35,15 @@ export const TextEditorContext = React.createContext<{
   insertBlockAfter: () => {},
   setTitle: (title: string) => {},
   titleBlockId: "title",
-  saveDocument: () => {}
+  saveDocument: () => {},
+  documentSaveData: null
 })
 
 class TextEditorContextProvider extends React.Component<{}, {
   document: Document,
   focusedBlock: string | undefined,
-  tempId: string
+  tempId: string,
+  documentSaveData: DocumentSaveData
 }> {
   titleBlockId = "title"
   constructor(props: {}) {
@@ -48,7 +51,8 @@ class TextEditorContextProvider extends React.Component<{}, {
     this.state = ({
       document: newDocument(),
       focusedBlock: undefined,
-      tempId: ""
+      tempId: "",
+      documentSaveData: null
     })
   }
 
@@ -65,7 +69,8 @@ class TextEditorContextProvider extends React.Component<{}, {
     this.setState({
       document: doc.document,
       tempId: doc.tempId,
-      focusedBlock: undefined
+      focusedBlock: undefined,
+      documentSaveData: doc.saveData
     })
   }
 
@@ -195,7 +200,8 @@ class TextEditorContextProvider extends React.Component<{}, {
             setTempDoc: this.setTempDoc,
             setTitle: this.setTitle,
             titleBlockId: this.titleBlockId,
-            saveDocument: this.saveDocument
+            saveDocument: this.saveDocument,
+            documentSaveData: this.state.documentSaveData
           }}>
             {this.props.children}
           </TextEditorContext.Provider>

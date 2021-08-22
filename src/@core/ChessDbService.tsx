@@ -43,6 +43,10 @@ function deleteGame(game: GameHeader): Promise<void> {
   return ApiService.del<void>(`/games/${game.id}`)
 }
 
+function deleteDocument(doc: DocumentHeader): Promise<void> {
+  return ApiService.del<void>('/documents/' + doc.id)
+}
+
 function updateGame(id: string, game: unknown): Promise<void> {
   return ApiService.post(`/games/${id}`, game)
 }
@@ -56,7 +60,8 @@ export default {
   getGameFromDb,
   getGame,
   deleteGame,
-  updateGame
+  updateGame,
+  deleteDocument,
 }
 
 export interface ChessDb {
@@ -67,10 +72,15 @@ export interface ChessDb {
 export interface ChessDbDetails {
   database: ChessDb
   games: GameHeader[]
+  documents: DocumentHeader[]
 }
 
+export interface DocumentHeader {
+  title: string, id: string, index: number
+}
 export interface GameHeader {
   id: string,
+  index: number
   db: string,
   userId: string,
   headers: Headers

@@ -18,44 +18,45 @@ import {TabRouterHandler} from "./TabRouterHandler";
 import TextEditor from "./libraries/text-editor/TextEditor";
 
 function App() {
-    const dispatch = useAppDispatch()
-    const {isAuthenticated, getAccessTokenSilently} = useAuth0()
-    useEffect(() => {
-        if (isAuthenticated) {
-            getAccessTokenSilently().then(t => {
-                console.log("set token", t)
-                ApiService.setAuthToken(t)
-                dispatch(LoadTabsAction())
-            })
-        } else {
-            console.log("remove token")
-            ApiService.setAuthToken("")
-        }
-    }, [isAuthenticated])
+  const dispatch = useAppDispatch()
+  const {isAuthenticated, getAccessTokenSilently} = useAuth0()
+  useEffect(() => {
+    if (isAuthenticated) {
+      getAccessTokenSilently().then(t => {
+        console.log("set token", t)
+        ApiService.setAuthToken(t)
+        dispatch(LoadTabsAction())
+      })
+    } else {
+      console.log("remove token")
+      ApiService.setAuthToken("")
+    }
+  }, [isAuthenticated])
 
-    return (
-        <>
-            <div className={"layout"}>
-            <TabRouterHandler/>
-            <Header/>
-            <Sidebar/>
-            <Tabs/>
-            <main className={"layout__main"}>
-                <Switch>
-                    <Route path="/" exact>
-                        <div>Select a Tab</div>
-                    </Route>
-                    <ProtectedRoute path="/databases" exact component={Databases}/>
-                    <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
-                    <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
-                    <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
-                    <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
-                    <ProtectedRoute path="/documents/:id" exact component={TextEditor}/>
-                </Switch>
-            </main>
-            </div>
-        </>
-    )
+  return (
+    <>
+      <div className={"layout"}>
+        <TabRouterHandler/>
+        <Header/>
+        <Sidebar/>
+        <Tabs/>
+        <main className={"layout__main"}>
+          <Switch>
+            <Route path="/" exact>
+              <div>Select a Tab</div>
+            </Route>
+            <ProtectedRoute path="/databases" exact component={Databases}/>
+            <ProtectedRoute path="/databases/:id" exact component={DatabaseDetails}/>
+            <ProtectedRoute path="/databases/:dbId/games/:id" exact component={TempGameView}/>
+            <ProtectedRoute path="/notebooks" exact component={Notebooks}/>
+            <ProtectedRoute path="/tempGames/:id" exact component={TempGameView}/>
+            <ProtectedRoute path="/documents/:id" exact component={TextEditor}/>
+            <ProtectedRoute path="/databases/:dbId/documents/:id" exact component={TextEditor}/>
+          </Switch>
+        </main>
+      </div>
+    </>
+  )
 }
 
 export default App

@@ -16,20 +16,25 @@ import {Menu} from "@headlessui/react";
 import {Block} from "./BlocksController";
 import {BulletListBlock, Heading1Block, Heading2Block, Heading3Block, TextBlock} from "./block-views/TextBlock";
 import {RouteComponentProps} from "react-router-dom";
-import {DocumentService} from "./DocumentService";
+import {DocumentService, TempDocument} from "./DocumentService";
 import {toast} from "react-toastify";
+import SaveTextModal from "./SaveTextModal";
 
-interface TextEditorProps extends RouteComponentProps<{id: string}>{}
+interface TextEditorProps extends RouteComponentProps<{id: string, dbId?: string}>{}
 
 const TextEditor: React.FC<TextEditorProps> = (props) => {
+  const [saveModalOpen, setSaveModalOpen] = useState(false)
   return (
     <TextEditorContextProvider>
+      <button className="button" onClick={setSaveModalOpen.bind(null, true)}
+              style={{position: "absolute", top: "20px", right: "20px"}}>Save Document</button>
       <Page {...props}/>
+      <SaveTextModal isOpen={saveModalOpen} hide={setSaveModalOpen.bind(null, false)}/>
     </TextEditorContextProvider>
   )
 }
 
-interface PageProps extends RouteComponentProps<{id: string}>{}
+interface PageProps extends RouteComponentProps<{id: string, dbId?: string}>{}
 
 const Page: React.FC<PageProps> = (props) => {
   const textEditor = useTextEditorContext()
@@ -38,7 +43,12 @@ const Page: React.FC<PageProps> = (props) => {
   useEffect(() => {
     (async () => {
       try {
-        const document = await DocumentService.getDocument(props.match.params.id);
+        let document: TempDocument;
+        if (props.match.params.dbId) {
+          document = await DocumentService.getDocumentFromDb(props.match.params.id, props.match.params.dbId )
+        } else {
+          document = await DocumentService.getDocument(props.match.params.id)
+        }
         textEditor.setTempDoc(document)
         setLoading(false)
       } catch (e: unknown) {

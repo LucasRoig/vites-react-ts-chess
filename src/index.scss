@@ -34,6 +34,9 @@ body {
   &__nav {
     flex: 0 0 $nav-width;
     grid-area: nav;
+    z-index: 1;
+    --tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
   &__main {
     flex: 1;
@@ -42,6 +45,7 @@ body {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     background: white;
+    position: relative;
   }
   &__tabs {
     grid-area: tabs;

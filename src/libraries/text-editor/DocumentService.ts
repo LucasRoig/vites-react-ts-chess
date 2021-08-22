@@ -1,9 +1,16 @@
 import {newDocument, Document, BlocksController} from "./BlocksController";
 import {newId} from "../../@core/IdGenerator";
+import ApiService from "../../@core/ApiService";
 
 export interface TempDocument {
   document: Document,
-  tempId: string
+  tempId: string,
+  saveData: DocumentSaveData
+}
+
+export type DocumentSaveData = null | {
+  id: string,
+  dbId: string
 }
 const LOCAL_STORAGE_KEY = "documents"
 
@@ -27,7 +34,7 @@ const toSerializableDocument = (document: Document): unknown => {
   }
 }
 
-const docFromSerializable = (s: any): Document =>{
+const docFromSerializable = (s: any): Document => {
   return {
     ...s,
     blocks: s.blocks.map((b: any) => BlocksController.fromSerializable(b))
@@ -40,7 +47,8 @@ export const DocumentService = {
     const tempId = newId();
     const tempDoc: TempDocument = {
       tempId,
-      document
+      document,
+      saveData: null
     }
 
     setLocalStorage([...getFromLocalStorage(), {...tempDoc, document: toSerializableDocument(document) as Document}])
@@ -71,5 +79,40 @@ export const DocumentService = {
     } else {
       throw new Error("Cannot find document with id " + id)
     }
+  },
+
+  getDocumentFromDb: async (id: string, dbId: string): Promise<TempDocument> => {
+    const find = getFromLocalStorage().find(doc => doc.saveData?.dbId === dbId && doc.saveData?.id === id)
+    if (find) {
+      return new Promise<TempDocument>(resolve => resolve({
+        ...find,
+        document: docFromSerializable(find.document)
+      }))
+    } else {
+      return ApiService.get("/documents/" + id).then(doc => {
+        const tempId = newId();
+        const tempDoc: TempDocument = {
+          tempId,
+          document: doc as any,
+          saveData: {
+            dbId: dbId,
+            id
+          }
+        }
+        setLocalStorage([...getFromLocalStorage(), tempDoc]);
+        return {
+          ...tempDoc,
+          document: docFromSerializable(doc)
+        }
+      })
+    }
+  },
+
+  createDocInDb: async (document: Document, dbId: string): Promise<{id: string}> => {
+    return ApiService.post<{id:string}>(`/db/${dbId}/documents`, toSerializableDocument(document))
+  },
+
+  updateDocInBase: async (document: Document, docId: string): Promise<{id: string}> => {
+    return ApiService.post<{id: string}>("/documents/" + docId, toSerializableDocument(document))
   }
 }

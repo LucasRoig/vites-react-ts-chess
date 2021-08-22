@@ -108,4 +108,11 @@ export const OpenGameFromDbAction = (gameId: string, dbId: string, white:string,
   })
 }
 
+export const OpenDocumentFromDbAction = (docTitle: string, dbId: string, docId: string): TabActionType => {
+  return OpenTabAction({
+    name: docTitle,
+    path: `/databases/${dbId}/documents/${docId}`
+  })
+}
+
 export type TabActionType = ClickTabActionType | OpenTabActionType | CloseTabActionType | LoadTabsActionType
