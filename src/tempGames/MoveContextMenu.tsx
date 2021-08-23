@@ -13,12 +13,14 @@ const MoveContextMenu = React.createContext<{
 export const MoveContextMenuProvider: React.FC<{
   deleteFromPosition: (p: Position) => void,
   promoteVariation: (p: Position) => void,
-  makeMainLine: (p: Position) => void
+  makeMainLine: (p: Position) => void,
+  deleteVariation: (p: Position) => void
 }> = (props) => {
 
   const handleContextMenu = (ctx: React.ContextType<typeof ContextMenuContext>) => (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => {
     console.log("context menu opened on", p)
     ctx.handleContextMenu(e, <ContextMenu position={p} promoteVariation={props.promoteVariation}
+                                          deleteVariation={props.deleteVariation}
                                           makeMainLine={props.makeMainLine}
                                           deleteFromPosition={props.deleteFromPosition}/>)
   }
@@ -42,7 +44,8 @@ const ContextMenu: React.FC<{
   deleteFromPosition: (p: Position) => void,
   promoteVariation: (p: Position) => void
   makeMainLine: (p: Position) => void
-}> = ({position, deleteFromPosition, promoteVariation, makeMainLine}) => {
+  deleteVariation: (p: Position) => void
+}> = ({position, deleteFromPosition, promoteVariation, makeMainLine, deleteVariation}) => {
   return(
     <Menu>
       <div className={"dropdown is-active"} style={{marginRight: "1rem"}}>
@@ -56,7 +59,7 @@ const ContextMenu: React.FC<{
               {!GameController.isMainline(position) &&(
                 <>
                   <Menu.Item>
-                    <a className="dropdown-item">Delete variation</a>
+                    <a className="dropdown-item" onClick={() => deleteVariation(position)}>Delete variation</a>
                   </Menu.Item>
                   <Menu.Item>
                     <a className="dropdown-item" onClick={() => promoteVariation(position)}>Promote variation</a>

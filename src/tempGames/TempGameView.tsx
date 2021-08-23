@@ -86,6 +86,16 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
     }
   }
 
+  function deleteVariation(p: Position) {
+    if (currentGame) {
+      const result = GameController.deleteVariation(p)
+      if (result.gameHasChanged) {
+        setCurrentPos(result.variationParent)
+        TempGamesService.updateTemporaryGame(currentGame)
+      }
+    }
+  }
+
   function onMove(from: Square, to: Square, san: string, fen: string) {
     if (currentPos && currentGame) {
       const {gameHasChanged, posToGo} = GameController.handleMove(currentGame.game, currentPos, from, to, san, fen);
@@ -135,7 +145,7 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
                 </div>
                 <div style={{padding: "7px 3px 7px 7px"}}>
                   <MoveContextMenuProvider deleteFromPosition={deleteFromPosition} makeMainLine={makeMainLine}
-                                           promoteVariation={promoteVariation}>
+                                           promoteVariation={promoteVariation} deleteVariation={deleteVariation}>
                     <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
                   </MoveContextMenuProvider>
                 </div>

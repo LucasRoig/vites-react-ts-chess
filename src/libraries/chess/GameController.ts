@@ -90,6 +90,16 @@ export const GameController = {
     return {
       gameHasChanged: i > 0
     }
+  },
+
+  deleteVariation(position: Position): {gameHasChanged: false} | {gameHasChanged: true, variationParent: Position | FirstPosition} {
+    const variationWrapper = findParentVariation(position)
+    if (variationWrapper === undefined) {
+      return {gameHasChanged: false}
+    }
+    const {variationParent, firstVariationPos} = variationWrapper;
+    variationParent.variations = variationParent.variations.filter(p => p.index !== firstVariationPos.index)
+    return {gameHasChanged: true, variationParent}
   }
 }
 
