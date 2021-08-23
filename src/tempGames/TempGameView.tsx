@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {NotationPanel} from "../shared-components/notation-panel/NotationPanel";
 import {ChessBoardWithRules} from "../shared-components/chessboard/ChessboardWithRules";
 import {Game, Position, Square} from "../libraries/chess";
-import {FirstPosition} from "../libraries/chess/Game";
+import {FirstPosition, gameToString} from "../libraries/chess/Game";
 import {RouteComponentProps} from "react-router-dom";
 import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
 import SaveGameModal from "../shared-components/SaveGameModal";
@@ -80,26 +80,40 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
         <>
           <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen} game={currentGame}/>
           <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
-          <div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>
-            <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
-            <div className="field has-addons">
+          <div style={{marginLeft: "5em"}}>
+            <div className="card" style={{backgroundColor: "white", width: "300px", height: "100%"}}>
+              <div style={{ borderBottom:"1px solid #dbdbdb", display: "flex", justifyContent: "space-between"}}>
+                <p className="title is-5" style={{padding: "7px 0 7px 7px", margin: 0}}>{gameToString(currentGame.game) || "New Game"}</p>
+                <button className="button is-success" style={{height: '100%', borderRadius: '0 0.25rem  0 0'}} onClick={toggleSaveGameModalOpen}>
+                  <span className="icon is-small">
+                    <i className="fas fa-save"/>
+                  </span>
+                </button>
+              </div>
+              <div style={{padding: "7px 3px 7px 7px"}}>
+                <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
+              </div>
+            </div>
+            <div className="field has-addons" style={{paddingTop: "0.75em", justifyContent: "center"}}>
               <p className="control">
                 <button className="button" onClick={previousMove}>
-                  <span className="icon">
-                    <i className="fas fa-arrow-left"/>
-                  </span>
+                    <span className="icon">
+                      <i className="fas fa-arrow-left"/>
+                    </span>
                 </button>
               </p>
               <p className="control">
                 <button className="button" onClick={nextMove}>
-                  <span className="icon">
-                    <i className="fas fa-arrow-right"/>
-                  </span>
+                    <span className="icon">
+                      <i className="fas fa-arrow-right"/>
+                    </span>
                 </button>
               </p>
             </div>
-            <button className="button" onClick={toggleSaveGameModalOpen}>Save</button>
           </div>
+          {/*<div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>*/}
+
+          {/*</div>*/}
         </>
         : <div>404</div>
       }
