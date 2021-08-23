@@ -3,6 +3,7 @@ import {Game, Position} from "../../libraries/chess";
 import "./NotationPanel.scss"
 import {fenToFullMoves, fenToLastMoveColor} from "../../libraries/chess/FenUtils";
 import {NonCircularGame, nonCircularGameToGame} from "../../libraries/chess/Game";
+import {useMoveContextMenu} from "../../tempGames/MoveContextMenu";
 
 type PositionClickedHandler = (pos: Position) => void
 
@@ -31,6 +32,7 @@ const NotationPanel: React.FC<NotationPanelProps> = ({game, currentPositionIndex
 
 const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
   ({position, currentPositionIndex, onPosClick}) => {
+    const contextMenu = useMoveContextMenu()
     function onClick() {
       onPosClick(position)
     }
@@ -38,7 +40,7 @@ const MainLineMove: React.FC<{ position: Position, currentPositionIndex: number,
     return (
       <>
         {processCommentBefore(position)}
-        <span onClick={onClick}
+        <span onClick={onClick} onContextMenu={(e) => contextMenu.handleContextMenu(e, position)}
               className={`mainline-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
         {processCommentAfter(position)}
         {processVariations(position, 0, currentPositionIndex, onPosClick)}
@@ -94,6 +96,7 @@ const Variation: React.FC<VariationProps> = ({position, depth, open, close, curr
 
 const VariationMove: React.FC<{ position: Position, depth: number, currentPositionIndex: number, onPosClick: PositionClickedHandler }> =
   ({position, depth, currentPositionIndex, onPosClick}) => {
+    const contextMenu = useMoveContextMenu()
     function onClick() {
       onPosClick(position)
     }
@@ -101,7 +104,7 @@ const VariationMove: React.FC<{ position: Position, depth: number, currentPositi
     return (
       <>
         {processCommentBefore(position)}
-        <span onClick={onClick}
+        <span onClick={onClick} onContextMenu={(e) => contextMenu.handleContextMenu(e, position)}
               className={`variation-move ${position.index === currentPositionIndex ? "active" : ""}`}>{positionToUci(position)}</span>
         {processCommentAfter(position)}
         {/*Only process a variation if position is the main move of the parent*/}

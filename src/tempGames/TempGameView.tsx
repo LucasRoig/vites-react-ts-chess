@@ -9,17 +9,27 @@ import SaveGameModal from "../shared-components/SaveGameModal";
 import useModal from "../shared-components/UseModal";
 import {toast} from "react-toastify";
 import {GameController} from "../libraries/chess/GameController";
+import {ContextMenuProvider, useContextMenuContext} from "../shared-components/context-menu/ContextMenuContext";
+import {MoveContextMenuProvider, useMoveContextMenu} from './MoveContextMenu';
+
+
 
 
 interface TempGameViewProps extends RouteComponentProps<{id: string, dbId?: string}> {
 
 }
 
+const ViewWrapper: React.FC<TempGameViewProps> = (props) => {
+  return (
+
+      <TempGameView {...props}/>
+  )
+}
+
 const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
   const [currentGame, setCurrentGame] = useState<TemporaryGame>();
   const [currentPos, setCurrentPos] = useState<FirstPosition>();
   const [isSaveGameModalOpen, toggleSaveGameModalOpen] = useModal()
-
   useEffect(() => {
     (async () => {
       const gameId = props.match.params.id;
@@ -43,6 +53,18 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
       setCurrentPos(pos)
     })()
   }, [])
+
+  function deleteFromPosition(p: Position) {
+    if (currentGame) {
+      const pos = GameController.getPosition(currentGame.game, p)
+      if (pos && (pos as Position).parent) {
+        const parent = (pos as Position).parent
+        parent.variations = parent.variations.filter(p2 => p.index !== p2.index)
+        setCurrentPos(parent)
+        TempGamesService.updateTemporaryGame(currentGame)
+      }
+    }
+  }
 
   function onMove(from: Square, to: Square, san: string, fen: string) {
     if (currentPos && currentGame) {
@@ -74,51 +96,51 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
       }
     }
   }
-  return (
-    <div style={{"display": "flex"}}>
-      {currentPos && currentGame ?
-        <>
-          <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen} game={currentGame}/>
-          <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
-          <div style={{marginLeft: "5em"}}>
-            <div className="card" style={{backgroundColor: "white", width: "300px", height: "100%"}}>
-              <div style={{ borderBottom:"1px solid #dbdbdb", display: "flex", justifyContent: "space-between"}}>
-                <p className="title is-5" style={{padding: "7px 0 7px 7px", margin: 0}}>{gameToString(currentGame.game) || "New Game"}</p>
-                <button className="button is-success" style={{height: '100%', borderRadius: '0 0.25rem  0 0'}} onClick={toggleSaveGameModalOpen}>
-                  <span className="icon is-small">
-                    <i className="fas fa-save"/>
-                  </span>
-                </button>
-              </div>
-              <div style={{padding: "7px 3px 7px 7px"}}>
-                <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
-              </div>
-            </div>
-            <div className="field has-addons" style={{paddingTop: "0.75em", justifyContent: "center"}}>
-              <p className="control">
-                <button className="button" onClick={previousMove}>
-                    <span className="icon">
-                      <i className="fas fa-arrow-left"/>
-                    </span>
-                </button>
-              </p>
-              <p className="control">
-                <button className="button" onClick={nextMove}>
-                    <span className="icon">
-                      <i className="fas fa-arrow-right"/>
-                    </span>
-                </button>
-              </p>
-            </div>
-          </div>
-          {/*<div style={{backgroundColor: "white", width: "300px", marginLeft: "5em"}}>*/}
 
-          {/*</div>*/}
-        </>
-        : <div>404</div>
-      }
-    </div>
+  return (
+      <div style={{"display": "flex"}} >
+        {currentPos && currentGame ?
+          <>
+            <SaveGameModal isOpen={isSaveGameModalOpen} hide={toggleSaveGameModalOpen} game={currentGame}/>
+            <ChessBoardWithRules fen={currentPos.fen} onMove={onMove}/>
+            <div style={{marginLeft: "5em"}} >
+              <div className="card" style={{backgroundColor: "white", width: "300px", height: "100%"}}>
+                <div style={{ borderBottom:"1px solid #dbdbdb", display: "flex", justifyContent: "space-between"}}>
+                  <p className="title is-5" style={{padding: "7px 0 7px 7px", margin: 0}}>{gameToString(currentGame.game) || "New Game"}</p>
+                  <button className="button is-success" style={{height: '100%', borderRadius: '0 0.25rem  0 0'}} onClick={toggleSaveGameModalOpen}>
+                    <span className="icon is-small">
+                      <i className="fas fa-save"/>
+                    </span>
+                  </button>
+                </div>
+                <div style={{padding: "7px 3px 7px 7px"}}>
+                  <MoveContextMenuProvider deleteFromPosition={deleteFromPosition}>
+                    <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
+                  </MoveContextMenuProvider>
+                </div>
+              </div>
+              <div className="field has-addons" style={{paddingTop: "0.75em", justifyContent: "center"}}>
+                <p className="control">
+                  <button className="button" onClick={previousMove}>
+                      <span className="icon">
+                        <i className="fas fa-arrow-left"/>
+                      </span>
+                  </button>
+                </p>
+                <p className="control" >
+                  <button className="button" onClick={nextMove}>
+                      <span className="icon">
+                        <i className="fas fa-arrow-right"/>
+                      </span>
+                  </button>
+                </p>
+              </div>
+            </div>
+          </>
+          : <div>404</div>
+        }
+      </div>
   )
 }
 
-export default TempGameView;
+export default ViewWrapper;
