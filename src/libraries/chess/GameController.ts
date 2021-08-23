@@ -79,6 +79,17 @@ export const GameController = {
     return {
       gameHasChanged: true
     }
+  },
+
+  makeMainLine(position: Position): {gameHasChanged: boolean} {
+    let i = 0;
+    while (findParentVariation(position) !== undefined) {
+      this.promoteVariation(position)
+      i++;
+    }
+    return {
+      gameHasChanged: i > 0
+    }
   }
 }
 

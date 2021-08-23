@@ -12,12 +12,14 @@ const MoveContextMenu = React.createContext<{
 
 export const MoveContextMenuProvider: React.FC<{
   deleteFromPosition: (p: Position) => void,
-  promoteVariation: (p: Position) => void
+  promoteVariation: (p: Position) => void,
+  makeMainLine: (p: Position) => void
 }> = (props) => {
 
   const handleContextMenu = (ctx: React.ContextType<typeof ContextMenuContext>) => (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => {
     console.log("context menu opened on", p)
     ctx.handleContextMenu(e, <ContextMenu position={p} promoteVariation={props.promoteVariation}
+                                          makeMainLine={props.makeMainLine}
                                           deleteFromPosition={props.deleteFromPosition}/>)
   }
 
@@ -39,7 +41,8 @@ const ContextMenu: React.FC<{
   position: Position,
   deleteFromPosition: (p: Position) => void,
   promoteVariation: (p: Position) => void
-}> = ({position, deleteFromPosition, promoteVariation}) => {
+  makeMainLine: (p: Position) => void
+}> = ({position, deleteFromPosition, promoteVariation, makeMainLine}) => {
   return(
     <Menu>
       <div className={"dropdown is-active"} style={{marginRight: "1rem"}}>
@@ -59,7 +62,7 @@ const ContextMenu: React.FC<{
                     <a className="dropdown-item" onClick={() => promoteVariation(position)}>Promote variation</a>
                   </Menu.Item>
                   <Menu.Item>
-                    <a className="dropdown-item">Make main line</a>
+                    <a className="dropdown-item" onClick={() => makeMainLine(position)}>Make main line</a>
                   </Menu.Item>
                 </>
                 )
