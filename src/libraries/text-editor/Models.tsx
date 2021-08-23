@@ -1,9 +1,7 @@
 import React from "react";
 import {newId} from "../../@core/IdGenerator";
-import {Game, serializableGameToGame} from "../chess";
-import {gameToSerializableGame, newGame, SerializableGame} from "../chess/Game";
 import {Block, BlockHandler} from "./BlocksController";
-import {ChessGameBlock} from "./block-views/ChessGameBlock";
+import {newNormalizedGame, NormalizedGame} from "../chess/NormalizedGame";
 
 export enum BlockTypeNames{
   Text = "Text",
@@ -51,7 +49,7 @@ const checkType = (acceptedType: BlockTypeNames) => (blockOrStr: Block | BlockTy
 
 export interface ChessGameBlockModel extends BaseBlock {
   type: BlockTypeNames.ChessGame;
-  game: Game;
+  game: NormalizedGame;
   isText: false;
 }
 
@@ -60,22 +58,12 @@ export const ChessGameBlockHandler: BlockHandler<ChessGameBlockModel> = {
   shouldConfirmDeletion: block => false,
   make: () => ({
     id: newId(),
-    game: newGame(),
+    game: newNormalizedGame(),
     type: BlockTypeNames.ChessGame,
     isText: false
   }),
-  toSerializable: block => {
-    return {
-      ...block,
-      game: gameToSerializableGame((block as ChessGameBlockModel).game)
-    }
-  },
-  fromSerializable: (s: any) => {
-    return {
-      ...(s as ChessGameBlockModel),
-      game: serializableGameToGame((s.game) as SerializableGame)
-    }
-  }
+  toSerializable: block => block,
+  fromSerializable: (s: any) => s as ChessGameBlockModel
 }
 
 export interface Heading1BlockModel extends TextBaseBlock {

@@ -1,16 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import {NotationPanel} from "../shared-components/notation-panel/NotationPanel";
 import {ChessBoardWithRules} from "../shared-components/chessboard/ChessboardWithRules";
-import {Game, Position, Square} from "../libraries/chess";
-import {FirstPosition, gameToString} from "../libraries/chess/Game";
+import {Square} from "../libraries/chess";
+import {gameToString} from "../libraries/chess/Game";
 import {RouteComponentProps} from "react-router-dom";
 import TempGamesService, {TemporaryGame} from "../@core/TempGamesService";
 import SaveGameModal from "../shared-components/SaveGameModal";
 import useModal from "../shared-components/UseModal";
 import {toast} from "react-toastify";
-import {GameController} from "../libraries/chess/GameController";
-import {ContextMenuProvider, useContextMenuContext} from "../shared-components/context-menu/ContextMenuContext";
-import {MoveContextMenuProvider, useMoveContextMenu} from './MoveContextMenu';
+import {MoveContextMenuProvider} from './MoveContextMenu';
+import {
+  NormalizedFirstPosition,
+  NormalizedGameHelper,
+  NormalizedGameMutator,
+  NormalizedPosition
+} from "../libraries/chess/NormalizedGame";
 
 
 
@@ -28,7 +32,7 @@ const ViewWrapper: React.FC<TempGameViewProps> = (props) => {
 
 const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
   const [currentGame, setCurrentGame] = useState<TemporaryGame>();
-  const [currentPos, setCurrentPos] = useState<FirstPosition>();
+  const [currentPos, setCurrentPos] = useState<NormalizedFirstPosition>();
   const [isSaveGameModalOpen, toggleSaveGameModalOpen] = useModal()
   useEffect(() => {
     (async () => {
@@ -46,50 +50,49 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
         return
       }
       setCurrentGame(temporaryGame)
-      let pos = temporaryGame?.game.firstPosition
-      while (pos?.variations[0]) {
-        pos = pos?.variations[0]
+      let pos = undefined;
+      if (temporaryGame?.game) {
+        pos = NormalizedGameHelper.getFirsPosition(temporaryGame.game)
       }
       setCurrentPos(pos)
     })()
   }, [])
 
-  function deleteFromPosition(p: Position) {
+  function deleteFromPosition(p: NormalizedPosition) {
     if (currentGame) {
-      const pos = GameController.getPosition(currentGame.game, p)
-      if (pos && (pos as Position).parent) {
-        const parent = (pos as Position).parent
-        parent.variations = parent.variations.filter(p2 => p.index !== p2.index)
-        setCurrentPos(parent)
+      const parent = NormalizedGameHelper.getPreviousPos(currentGame.game, p.index)
+      const g = NormalizedGameMutator.deleteFromPosition(currentGame.game, p)
+      setCurrentGame({...currentGame, game: g})
+      setCurrentPos(parent)
+      TempGamesService.updateTemporaryGame(currentGame)
+    }
+  }
+
+  function promoteVariation(p: NormalizedPosition) {
+    if (currentGame) {
+      const result = NormalizedGameMutator.promoteVariation(currentGame.game, p);
+      if (result.hasChanged) {
+        setCurrentGame({...currentGame, game: result.game})
         TempGamesService.updateTemporaryGame(currentGame)
       }
     }
   }
 
-  function promoteVariation(p: Position) {
+  function makeMainLine(p: NormalizedPosition) {
     if (currentGame) {
-      const {gameHasChanged} = GameController.promoteVariation(p)
-      if (gameHasChanged) {
-        setCurrentPos(p.parent) //forces update on notation panel
+      const result = NormalizedGameMutator.makeMainLine(currentGame.game, p);
+      if (result.hasChanged) {
+        setCurrentGame({...currentGame, game: result.game})
         TempGamesService.updateTemporaryGame(currentGame)
       }
     }
   }
 
-  function makeMainLine(p: Position) {
+  function deleteVariation(p: NormalizedPosition) {
     if (currentGame) {
-      const {gameHasChanged} = GameController.makeMainLine(p)
-      if (gameHasChanged) {
-        setCurrentPos(p.parent) //forces update on notation panel
-        TempGamesService.updateTemporaryGame(currentGame)
-      }
-    }
-  }
-
-  function deleteVariation(p: Position) {
-    if (currentGame) {
-      const result = GameController.deleteVariation(p)
-      if (result.gameHasChanged) {
+      const result = NormalizedGameMutator.deleteVariation(currentGame.game, p);
+      if (result.hasChanged) {
+        setCurrentGame({...currentGame, game: result.game})
         setCurrentPos(result.variationParent)
         TempGamesService.updateTemporaryGame(currentGame)
       }
@@ -98,33 +101,35 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
 
   function onMove(from: Square, to: Square, san: string, fen: string) {
     if (currentPos && currentGame) {
-      const {gameHasChanged, posToGo} = GameController.handleMove(currentGame.game, currentPos, from, to, san, fen);
-      setCurrentPos(posToGo)
-      if (gameHasChanged) {
+      const r = NormalizedGameMutator.handleMove(currentGame.game, currentPos, from, to, san, fen);
+      setCurrentPos(r.posToGo)
+      if (r.hasChanged) {
+        setCurrentGame({...currentGame, game: r.game})
         TempGamesService.updateTemporaryGame(currentGame)
       }
     }
   }
 
   function nextMove() {
-    if (currentPos && currentGame && currentPos.variations.length > 0) {
-      setCurrentPos(currentPos.variations[0])
+    if (currentPos && currentGame && currentPos.variationsIndexes.length > 0) {
+      const nextPos = NormalizedGameHelper.getNextPos(currentGame.game, currentPos.index);
+      if (nextPos) {
+        setCurrentPos(nextPos)
+      }
     }
   }
 
   function previousMove() {
-    if (currentPos && currentGame && 'parent' in currentPos) {
-      setCurrentPos((currentPos as Position).parent)
+    if (currentPos && currentGame) {
+      const previousPos = NormalizedGameHelper.getPreviousPos(currentGame.game, currentPos.index)
+      if (previousPos) {
+        setCurrentPos(previousPos)
+      }
     }
   }
 
-  function goToPosition(position: Position) {
-    if (currentGame) {
-      const pos = GameController.getPosition(currentGame.game, position)
-      if (pos) {
-        setCurrentPos(pos)
-      }
-    }
+  function goToPosition(position: NormalizedPosition) {
+    setCurrentPos(position)
   }
 
   return (
@@ -145,7 +150,8 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
                 </div>
                 <div style={{padding: "7px 3px 7px 7px"}}>
                   <MoveContextMenuProvider deleteFromPosition={deleteFromPosition} makeMainLine={makeMainLine}
-                                           promoteVariation={promoteVariation} deleteVariation={deleteVariation}>
+                                           promoteVariation={promoteVariation} game={currentGame.game}
+                                           deleteVariation={deleteVariation}>
                     <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
                   </MoveContextMenuProvider>
                 </div>

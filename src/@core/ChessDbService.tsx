@@ -1,6 +1,6 @@
 import ApiService from "./ApiService";
-import {Game, serializableGameToGame, Headers} from "../libraries/chess";
-import {SerializableGame} from "../libraries/chess/Game";
+import {Headers} from "../libraries/chess";
+import {NormalizedGame} from "../libraries/chess/NormalizedGame";
 
 function createChessDb(name: string): Promise<ChessDb> {
   return ApiService.post<ChessDb>("/db", {
@@ -24,18 +24,15 @@ function getGameFromDb(gameId: string, dbId: string): Promise<GameHeader | undef
   return getDbDetails(dbId).then(details => details.games.find(g => g.id === gameId))
 }
 
-function getGame(gameId: string): Promise<Game | void> {
-  return ApiService.get<SerializableGame & {white: string, black: string, date: string, event: string, result: string}>(`/games/${gameId}`)
-    .then(g => {
-      return serializableGameToGame(g)
-  })
+function getGame(gameId: string): Promise<NormalizedGame | void> {
+  return ApiService.get<NormalizedGame & {white: string, black: string, date: string, event: string, result: string}>(`/games/${gameId}`)
 }
 
 function createGame(
   {
     dbId,
     game
-  }: { dbId: string, game: SerializableGame }): Promise<GameHeader> {
+  }: { dbId: string, game: NormalizedGame }): Promise<GameHeader> {
   return ApiService.post<GameHeader>(`/db/${dbId}/games`, game)
 }
 
@@ -47,7 +44,7 @@ function deleteDocument(doc: DocumentHeader): Promise<void> {
   return ApiService.del<void>('/documents/' + doc.id)
 }
 
-function updateGame(id: string, game: unknown): Promise<void> {
+function updateGame(id: string, game: NormalizedGame): Promise<void> {
   return ApiService.post(`/games/${id}`, game)
 }
 

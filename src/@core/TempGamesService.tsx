@@ -1,19 +1,9 @@
-import {Game, serializableGameToGame} from "../libraries/chess";
-import {FirstPosition, gameToSerializableGame, newGame, SerializableGame} from "../libraries/chess/Game";
 import ChessDbService from "./ChessDbService";
+import {newNormalizedGame, NormalizedGame} from "../libraries/chess/NormalizedGame";
 
 interface TemporaryGame {
   temporaryId: number,
-  game: Game,
-  saveData: null | {
-    gameId: string,
-    dbId: string
-  }
-}
-
-interface SerializableTempGame {
-  temporaryId: number,
-  game: SerializableGame,
+  game: NormalizedGame,
   saveData: null | {
     gameId: string,
     dbId: string
@@ -22,16 +12,16 @@ interface SerializableTempGame {
 
 const localStorageKey = "temporaryGames"
 
-function getLocalStorage(): SerializableTempGame[] {
+function getLocalStorage(): TemporaryGame[] {
   const str = localStorage.getItem(localStorageKey);
   if (!str) {
     return []
   } else {
-    return JSON.parse(str) as SerializableTempGame[]
+    return JSON.parse(str) as TemporaryGame[]
   }
 }
 
-function addToLocalStorage(game: Game, saveData: null | { gameId: string, dbId: string } = null): TemporaryGame {
+function addToLocalStorage(game: NormalizedGame, saveData: null | { gameId: string, dbId: string } = null): TemporaryGame {
   const games = getLocalStorage();
   const id = Math.max(...games.map(g => g.temporaryId), -1) + 1
   const tempGame: TemporaryGame = {
@@ -39,17 +29,13 @@ function addToLocalStorage(game: Game, saveData: null | { gameId: string, dbId: 
     game: game,
     saveData: saveData
   }
-  games.push({
-    temporaryId: tempGame.temporaryId,
-    game: gameToSerializableGame(tempGame.game),
-    saveData: tempGame.saveData
-  })
+  games.push(tempGame)
   localStorage.setItem(localStorageKey, JSON.stringify(games))
   return tempGame
 }
 
 function newTemporaryGame(): TemporaryGame {
-  const game = newGame();
+  const game = newNormalizedGame();
   const temporaryGame = addToLocalStorage(game);
   return temporaryGame
 }
@@ -57,11 +43,7 @@ function newTemporaryGame(): TemporaryGame {
 function getTemporaryGame(id: number): TemporaryGame | undefined {
   const find = getLocalStorage().find(g => g.temporaryId === id);
   if (find) {
-    return {
-      temporaryId: find.temporaryId,
-      game: serializableGameToGame(find.game),
-      saveData: find.saveData
-    }
+    return find
   } else {
     return undefined
   }
@@ -70,11 +52,7 @@ function getTemporaryGame(id: number): TemporaryGame | undefined {
 function getTempGameFromDatabase(gameId: string, dbId: string): Promise<TemporaryGame | undefined> {
   const find = getLocalStorage().find(g => g.saveData && g.saveData.dbId == dbId && g.saveData.gameId == gameId);
   if (find) {
-    return new Promise<TemporaryGame>(resolve => resolve({
-      temporaryId: find.temporaryId,
-      game: serializableGameToGame(find.game),
-      saveData: find.saveData
-    }))
+    return new Promise<TemporaryGame>(resolve => resolve(find))
   } else {
     return ChessDbService.getGame(gameId).then(g => {
       if (!g) {
@@ -91,11 +69,7 @@ function updateTemporaryGame(game: TemporaryGame): void {
   const games = getLocalStorage();
   const index = games.findIndex(t => t.temporaryId === game.temporaryId);
   if (index >= 0) {
-    games[index] = {
-      temporaryId: game.temporaryId,
-      game: gameToSerializableGame(game.game),
-      saveData: game.saveData
-    }
+    games[index] = game
     localStorage.setItem(localStorageKey, JSON.stringify(games))
   }
 }

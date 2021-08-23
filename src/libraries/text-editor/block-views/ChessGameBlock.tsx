@@ -1,19 +1,24 @@
 import React from "react";
-import {Game, Position, Square} from "../../chess";
-import {FirstPosition, newGame} from "../../chess/Game";
+import {Square} from "../../chess";
 import {ChessBoardWithRules} from "../../../shared-components/chessboard/ChessboardWithRules";
 import {NotationPanel} from "../../../shared-components/notation-panel/NotationPanel";
-import {GameController} from "../../chess/GameController";
 import {ChessGameBlockModel} from "../Models";
 import {TextEditorContext} from "../TextEditorContext";
+import {
+  NormalizedFirstPosition,
+  NormalizedGame,
+  NormalizedGameHelper,
+  NormalizedGameMutator,
+  NormalizedPosition
+} from "../../chess/NormalizedGame";
 
 interface ChessGameBlockProps {
   block: ChessGameBlockModel
 }
 
 interface ChessGameBlockState {
-  game: Game,
-  currentPos: FirstPosition
+  game: NormalizedGame,
+  currentPos: NormalizedFirstPosition
 }
 
 class ChessGameBlock extends React.Component<ChessGameBlockProps, ChessGameBlockState> {
@@ -24,28 +29,29 @@ class ChessGameBlock extends React.Component<ChessGameBlockProps, ChessGameBlock
     console.log(this.props.block.game)
     this.state = {
       game: this.props.block.game,
-      currentPos: this.props.block.game.firstPosition
+      currentPos: NormalizedGameHelper.getFirsPosition(this.props.block.game)
     }
   }
 
   onMove = (from: Square, to: Square, san: string, fen: string) => {
-    const {gameHasChanged, posToGo} = GameController.handleMove(this.state.game, this.state.currentPos, from, to, san, fen)
-    this.setState({
-      currentPos: posToGo
-    }, () => {
-      if (gameHasChanged) {
-        this.context.saveDocument()
-      }
-    })
-  }
-
-  goToPosition = (position: Position) => {
-    const pos = GameController.getPosition(this.state.game, position);
-    if (pos) {
+    const r = NormalizedGameMutator.handleMove(this.state.game, this.state.currentPos, from, to, san, fen);
+    if (r.hasChanged) {
+      this.props.block.game = r.game
       this.setState({
-        currentPos: pos
+        currentPos: r.posToGo,
+        game: r.game
+      }, () => this.context.saveDocument())
+    } else {
+      this.setState({
+        currentPos: r.posToGo
       })
     }
+  }
+
+  goToPosition = (position: NormalizedPosition) => {
+    this.setState({
+      currentPos: position
+    })
   }
 
   render() {

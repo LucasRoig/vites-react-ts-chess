@@ -1,5 +1,4 @@
-export type {Position, Game, Headers} from "./Game";
-export {serializableGameToGame} from "./Game"
+export type {Headers} from "./Game";
 
 type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h';
 type Rank = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';

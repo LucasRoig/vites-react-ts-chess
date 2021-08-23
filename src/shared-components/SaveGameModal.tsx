@@ -9,7 +9,7 @@ import {HorizontalInput} from "./inputs/HorizontalInput";
 import {HorizontalField} from "./inputs/HorizontalField";
 import {useFormik} from "formik";
 import * as Yup from "yup"
-import {gameToSerializableGame, getHeader, HeadersKeys, setHeader} from "../libraries/chess/Game";
+import {getHeader, HeadersKeys, setHeader} from "../libraries/chess/Game";
 
 interface SaveGameModalProps {
   isOpen: boolean,
@@ -62,7 +62,7 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
       setHeader(game.game, HeadersKeys.Event, event)
       setHeader(game.game, HeadersKeys.Result, result)
       if (game.saveData !== null) {
-        const serializableGame = gameToSerializableGame(game.game)
+        const serializableGame = game.game
         ChessDbService.updateGame(serializableGame.id, serializableGame).then(() => {
           setIsSubmitting(false)
           hideAndReset()
@@ -73,7 +73,7 @@ const SaveGameModal: React.FunctionComponent<SaveGameModalProps> = ({isOpen, hid
           toast.error("Error while saving game")
         })
       } else {
-        const serializableGame = gameToSerializableGame(game.game)
+        const serializableGame = game.game
         ChessDbService.createGame({ dbId: database, game: serializableGame}).then(res => {
           setIsSubmitting(false)
           hideAndReset()

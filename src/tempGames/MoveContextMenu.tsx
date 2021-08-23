@@ -1,26 +1,25 @@
 import React, {useContext} from "react";
 import {ContextMenuContext, ContextMenuProvider} from "../shared-components/context-menu/ContextMenuContext";
-import {Position} from "../libraries/chess";
-import {TextEditorContext} from "../libraries/text-editor/TextEditorContext";
 import {Menu} from "@headlessui/react";
-import {GameController} from "../libraries/chess/GameController";
+import {NormalizedGame, NormalizedGameHelper, NormalizedPosition} from "../libraries/chess/NormalizedGame";
 const MoveContextMenu = React.createContext<{
-  handleContextMenu: (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => void,
+  handleContextMenu: (e: React.MouseEvent<HTMLElement, MouseEvent>, p: NormalizedPosition) => void,
 }>({
-  handleContextMenu: (e,p) => console.error("Not Implemented"),
+  handleContextMenu: () => console.error("Not Implemented"),
 })
 
 export const MoveContextMenuProvider: React.FC<{
-  deleteFromPosition: (p: Position) => void,
-  promoteVariation: (p: Position) => void,
-  makeMainLine: (p: Position) => void,
-  deleteVariation: (p: Position) => void
+  deleteFromPosition: (p: NormalizedPosition) => void,
+  promoteVariation: (p: NormalizedPosition) => void,
+  makeMainLine: (p: NormalizedPosition) => void,
+  deleteVariation: (p: NormalizedPosition) => void,
+  game: NormalizedGame
 }> = (props) => {
 
-  const handleContextMenu = (ctx: React.ContextType<typeof ContextMenuContext>) => (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => {
+  const handleContextMenu = (ctx: React.ContextType<typeof ContextMenuContext>) => (e: React.MouseEvent<HTMLElement, MouseEvent>, p: NormalizedPosition) => {
     console.log("context menu opened on", p)
     ctx.handleContextMenu(e, <ContextMenu position={p} promoteVariation={props.promoteVariation}
-                                          deleteVariation={props.deleteVariation}
+                                          deleteVariation={props.deleteVariation} game={props.game}
                                           makeMainLine={props.makeMainLine}
                                           deleteFromPosition={props.deleteFromPosition}/>)
   }
@@ -40,12 +39,13 @@ export const MoveContextMenuProvider: React.FC<{
 }
 
 const ContextMenu: React.FC<{
-  position: Position,
-  deleteFromPosition: (p: Position) => void,
-  promoteVariation: (p: Position) => void
-  makeMainLine: (p: Position) => void
-  deleteVariation: (p: Position) => void
-}> = ({position, deleteFromPosition, promoteVariation, makeMainLine, deleteVariation}) => {
+  position: NormalizedPosition,
+  game: NormalizedGame
+  deleteFromPosition: (p: NormalizedPosition) => void,
+  promoteVariation: (p: NormalizedPosition) => void
+  makeMainLine: (p: NormalizedPosition) => void
+  deleteVariation: (p: NormalizedPosition) => void
+}> = ({game, position, deleteFromPosition, promoteVariation, makeMainLine, deleteVariation}) => {
   return(
     <Menu>
       <div className={"dropdown is-active"} style={{marginRight: "1rem"}}>
@@ -56,7 +56,7 @@ const ContextMenu: React.FC<{
               <Menu.Item>
                 <a className="dropdown-item" onClick={() => deleteFromPosition(position)}>Delete from here</a>
               </Menu.Item>
-              {!GameController.isMainline(position) &&(
+              {!NormalizedGameHelper.isMainline(game, position) &&(
                 <>
                   <Menu.Item>
                     <a className="dropdown-item" onClick={() => deleteVariation(position)}>Delete variation</a>
