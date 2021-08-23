@@ -1,14 +1,12 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import ChessDbService, {ChessDb} from "../@core/ChessDbService";
 import {toast} from "react-toastify";
-import {ConfirmationModal} from "../shared-components/confirmation-modal/ConfirmationModal";
 import {useAppDispatch} from "../store";
 import {useFormik} from "formik"
 
 import {OpenTabAction} from "../store/tabs/actions";
 import {HorizontalInput} from "../shared-components/inputs/HorizontalInput";
 import {Modal} from "../shared-components/Modal";
-import {useConfirmationModalContext} from "../shared-components/confirmation-modal/ConfirmationModalContext";
 import {DeleteButton} from "../shared-components/buttons/DeleteButton";
 import {useCollection} from "../shared-components/UseCollection";
 

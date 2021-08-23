@@ -1,10 +1,11 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import ReactDOM from "react-dom";
 
 export interface ConfirmationModalProps {
   isOpen: boolean,
   onValidate: () => void
   onCancel: () => void
+  body?: ReactNode
   title?: string
   message?: string
   validateText?: string
@@ -20,6 +21,7 @@ export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> 
      onCancel,
      title = "Confirmation",
      message = "Are you sure ?",
+    body,
     validateText= "Validate",
     cancelText = "Cancel",
     validateClass = "is-success",
@@ -33,7 +35,7 @@ export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> 
             <p className="modal-card-title">{title}</p>
           </header>
           <section className="modal-card-body">
-            {message}
+            {body || message}
           </section>
           <footer className="modal-card-foot">
             <button className={`button ${validateClass}`} onClick={onValidate}>{validateText}</button>

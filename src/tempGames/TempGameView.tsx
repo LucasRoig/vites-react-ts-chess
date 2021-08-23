@@ -128,6 +128,22 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
     }
   }
 
+  function setCommentAfter(p: NormalizedPosition, comment: string) {
+    if (currentGame) {
+      const game= NormalizedGameMutator.setCommentAfter(currentGame.game, p, comment)
+      setCurrentGame({...currentGame, game})
+      TempGamesService.updateTemporaryGame(currentGame)
+    }
+  }
+
+  function setCommentBefore(p: NormalizedPosition, comment: string) {
+    if (currentGame) {
+      const game= NormalizedGameMutator.setCommentBefore(currentGame.game, p, comment)
+      setCurrentGame({...currentGame, game})
+      TempGamesService.updateTemporaryGame(currentGame)
+    }
+  }
+
   function goToPosition(position: NormalizedPosition) {
     setCurrentPos(position)
   }
@@ -151,7 +167,8 @@ const TempGameView: React.FunctionComponent<TempGameViewProps> = (props) => {
                 <div style={{padding: "7px 3px 7px 7px"}}>
                   <MoveContextMenuProvider deleteFromPosition={deleteFromPosition} makeMainLine={makeMainLine}
                                            promoteVariation={promoteVariation} game={currentGame.game}
-                                           deleteVariation={deleteVariation}>
+                                           setCommentBefore={setCommentBefore}
+                                           deleteVariation={deleteVariation} setCommentAfter={setCommentAfter}>
                     <NotationPanel game={currentGame.game} currentPositionIndex={currentPos.index} onPosClick={goToPosition}/>
                   </MoveContextMenuProvider>
                 </div>

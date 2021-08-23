@@ -180,6 +180,20 @@ export const NormalizedGameMutator = {
       g.positions[p.index] = p
       return {posToGo: p, hasChanged: true, game: g}
     }
+  },
+  setCommentAfter(game: NormalizedGame, pos: NormalizedPosition, comment: string): NormalizedGame {
+    const newPos = {
+      ...pos,
+      comment
+    }
+    return updatePosAtIndex(game, newPos, newPos.index)
+  },
+  setCommentBefore(game: NormalizedGame, pos: NormalizedPosition, comment: string): NormalizedGame {
+    const newPos = {
+      ...pos,
+      commentBefore: comment
+    }
+    return updatePosAtIndex(game, newPos, newPos.index)
   }
 }
 
