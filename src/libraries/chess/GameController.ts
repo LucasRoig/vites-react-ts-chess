@@ -62,5 +62,37 @@ export const GameController = {
 
       return {posToGo: pos, gameHasChanged: true}
     }
+  },
+
+  isMainline(position: Position) {
+    return findParentVariation(position) === undefined
+  },
+
+  promoteVariation(position: Position): {gameHasChanged: boolean} {
+    let parentVariationWrapper = findParentVariation(position)
+    if (parentVariationWrapper === undefined) {
+      return {gameHasChanged: false}
+    }
+    const {variationParent, firstVariationPos} = parentVariationWrapper;
+    variationParent.variations = variationParent.variations.filter(p => p.index !== firstVariationPos.index)
+    variationParent.variations.unshift(firstVariationPos)
+    return {
+      gameHasChanged: true
+    }
   }
+}
+
+const findParentVariation = (position: Position): {variationParent: Position | FirstPosition, firstVariationPos: Position } | undefined => {
+  let p: Position | FirstPosition = position;
+  while((p as Position).parent) {
+    const parent = (p as Position).parent
+    if (parent.variations[0].index !== p.index) {
+      return {
+        variationParent: parent,
+        firstVariationPos: p as Position
+      }
+    }
+    p = parent
+  }
+  return undefined
 }

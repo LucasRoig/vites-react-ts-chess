@@ -3,6 +3,7 @@ import {ContextMenuContext, ContextMenuProvider} from "../shared-components/cont
 import {Position} from "../libraries/chess";
 import {TextEditorContext} from "../libraries/text-editor/TextEditorContext";
 import {Menu} from "@headlessui/react";
+import {GameController} from "../libraries/chess/GameController";
 const MoveContextMenu = React.createContext<{
   handleContextMenu: (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => void,
 }>({
@@ -10,12 +11,14 @@ const MoveContextMenu = React.createContext<{
 })
 
 export const MoveContextMenuProvider: React.FC<{
-  deleteFromPosition: (p: Position) => void
+  deleteFromPosition: (p: Position) => void,
+  promoteVariation: (p: Position) => void
 }> = (props) => {
 
   const handleContextMenu = (ctx: React.ContextType<typeof ContextMenuContext>) => (e: React.MouseEvent<HTMLElement, MouseEvent>, p: Position) => {
     console.log("context menu opened on", p)
-    ctx.handleContextMenu(e, <ContextMenu position={p} deleteFromPosition={props.deleteFromPosition}/>)
+    ctx.handleContextMenu(e, <ContextMenu position={p} promoteVariation={props.promoteVariation}
+                                          deleteFromPosition={props.deleteFromPosition}/>)
   }
 
   return (
@@ -34,8 +37,9 @@ export const MoveContextMenuProvider: React.FC<{
 
 const ContextMenu: React.FC<{
   position: Position,
-  deleteFromPosition: (p: Position) => void
-}> = ({position, deleteFromPosition}) => {
+  deleteFromPosition: (p: Position) => void,
+  promoteVariation: (p: Position) => void
+}> = ({position, deleteFromPosition, promoteVariation}) => {
   return(
     <Menu>
       <div className={"dropdown is-active"} style={{marginRight: "1rem"}}>
@@ -46,15 +50,20 @@ const ContextMenu: React.FC<{
               <Menu.Item>
                 <a className="dropdown-item" onClick={() => deleteFromPosition(position)}>Delete from here</a>
               </Menu.Item>
-              <Menu.Item>
-                <a className="dropdown-item">Delete variation</a>
-              </Menu.Item>
-              <Menu.Item>
-                <a className="dropdown-item">Promote variation</a>
-              </Menu.Item>
-              <Menu.Item>
-                <a className="dropdown-item">Make main line</a>
-              </Menu.Item>
+              {!GameController.isMainline(position) &&(
+                <>
+                  <Menu.Item>
+                    <a className="dropdown-item">Delete variation</a>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <a className="dropdown-item" onClick={() => promoteVariation(position)}>Promote variation</a>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <a className="dropdown-item">Make main line</a>
+                  </Menu.Item>
+                </>
+                )
+              }
             </div>
           </div>
         </Menu.Items>
