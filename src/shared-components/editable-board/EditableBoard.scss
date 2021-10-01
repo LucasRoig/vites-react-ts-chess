@@ -1,0 +1,83 @@
+.editable-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 500px;
+  height: 500px;
+  border: 1px solid;
+}
+
+.editable-board .square.even{
+  background: #f0d9b5;
+}
+
+.editable-board .square.odd{
+  background: #b58863;
+}
+
+.tool-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.black.rook {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bR.svg);
+  background-size: cover;
+}
+
+.black.king {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bK.svg);
+  background-size: cover;
+
+}
+
+.black.queen {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bQ.svg);
+  background-size: cover;
+
+}
+
+.black.bishop {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bB.svg);
+  background-size: cover;
+}
+
+.black.knight {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bN.svg);
+  background-size: cover;
+}
+
+.black.pawn {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/bP.svg);
+  background-size: cover;
+}
+
+.white.rook {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wR.svg);
+  background-size: cover;
+}
+
+.white.king {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wK.svg);
+  background-size: cover;
+}
+
+.white.queen {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wQ.svg);
+  background-size: cover;
+}
+
+.white.bishop {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wB.svg);
+  background-size: cover;
+}
+
+.white.knight {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wN.svg);
+  background-size: cover;
+}
+
+.white.pawn {
+  background-image: url(../../../node_modules/react-chessground/dist/images/pieces/merida/wP.svg);
+  background-size: cover;
+}
